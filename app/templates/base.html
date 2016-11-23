@@ -2,14 +2,14 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>学生信息管理平台</title>
-	<link href="StudentStyle.css" rel="stylesheet" type="text/css">
-	<link href="./Index.aspx_files/jbox.css" rel="stylesheet" type="text/css">
-	<link href="./Index.aspx_files/ks.css" rel="stylesheet" type="text/css">
-    <script src="jquery-1.4.2.min.js" type="text/javascript"></script>
-    <script src="jquery.jBox-2.3.min.js" type="text/javascript"></script>
-    <script src="jquery.jBox-zh-CN.js" type="text/javascript"></script>
-    <script src="Common.js" type="text/javascript"></script>
-    <script src="Data.js" type="text/javascript"></script>
+	<link href="static/css/StudentStyle.css" rel="stylesheet" type="text/css">
+	<link href="static/css/jbox.css" rel="stylesheet" type="text/css">
+	<link href="static/css/ks.css" rel="stylesheet" type="text/css">
+    <script src="static/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="static/js/jquery.jBox-2.3.min.js" type="text/javascript"></script>
+    <script src="static/js/jquery.jBox-zh-CN.js" type="text/javascript"></script>
+    <script src="static/js/Common.js" type="text/javascript"></script>
+    <script src="static/js/Data.js" type="text/javascript"></script>
     <script type="text/javascript">
         $().ready(function () {
             setStudMsgHeadTabCheck();
@@ -43,7 +43,7 @@
             if (confirm("确定退出吗？")) {
                 StudentLogin.loginOut(function (data) {
                     if (data == "true") {
-                        window.location = "/Login.aspx";
+                        window.location = "/logout";
                     }
                     else {
                         jBox.alert("退出失败！", "提示", new { buttons: { "确定": true} });
@@ -51,6 +51,19 @@
                 });
             }
         }
+		function loginuser() {
+			$.post('/login/', {
+				username: $("#id_username").val(),
+				password: $("#id_password").val()
+			}, function(data){
+					jBox.alert(data);
+					jBox.alert(data.code);
+					if (data.code == 0) {
+						jBox.alert("登录成功!");
+						window.location = "/";
+					}
+			}, "json");
+		}
         //更改报考类别
         function changeCateory(thisObj, id) {
             var oldCateoryId = $("#cateoryId").val();
@@ -80,6 +93,7 @@
                 });
             }
         }
+
     </script>
     
 <script type="text/javascript">
@@ -97,7 +111,7 @@
             <div class="page">
                 <div id="logo">
                     <a href="/">
-                        <img src="/static/image/logo.gif" alt="" width="165" height="48">
+                        <img src="/static/images/logo.jpg" alt="" width="125" height="70">
                     </a>
                 </div>
                 <div class="topxx">
@@ -115,15 +129,19 @@
 					{{ user.id }} 学员：{{ user.name}}, 欢迎您！ <a href="">我的信息</a> <a href="">
                         通知</a> <a href="">密码修改</a> <a onclick="loginOut()" href="javascript:">安全退出</a>
 					{% else %}
-							
+					<input id="id_username" name="username" maxlength="30" placeholder="input your
+					id"/>
+					<input id="id_password" name="passwd" type="password" maxlength="30" placeholder="password"/>
+					<button type="submit" class="btn btn-primary" onclick="loginuser();">登录</button>
+					<button type="submit" class="btn btn-primary" onclick="signuser();">注册</button>
 					{% endif %}
                 </div>
                 <div class="blog_nav">
                     <ul>
-                        <li><a href="/Index.aspx.html">我的信息</a></li>
-                        <li><a href="">教务中心</a></li>
-                        <li><a href="">我的学费</a></li>
-                        <li><a href="">资料中心</a></li>
+                        <li><a href="/">我的信息</a></li>
+                        <li><a href="/message/">学院通知</a></li>
+                        <li><a href="/communication/">在线交流</a></li>
+                        <li><a href="/parent/">家长社区</a></li>
                     </ul>
                 </div>
             </div>
@@ -140,59 +158,55 @@
                     </div>
                     <div class="cdlist">
                         <div>
-                            <a href="">我的信息</a></div>
+                            <a href="/">我的信息</a></div>
                         <div>
-                            <a href="">班级信息 </a>
-                        </div>
+                            <a href="/classinfo/">班级信息 </a></div>
                         <div>
-                            <a href="">短信息</a></div>
+                            <a href="/message/">学院通知</a></div>
                         <div>
-                            <a href="">学院通知</a></div>
+                            <a href="/homework">我的作业</a></div>
                         <div>
-                            <a href="">我的作业</a></div>
+							<a href="/grade/">我的成绩</a></div>
+                        <div>
+							<a href="/article-push/">文章推送</a></div>
                     </div>
                     <div class="ta1">
-                        <strong>教务中心</strong>
+						<a href="/communication/"><strong>在线交流</strong></a>
                         <div class="leftbgbt2">
                         </div>
                     </div>
-                    <div class="cdlist">
-                        <div>
-                            <a href="">我的报考</a></div>
-                        <div>
-                            <a href="">我的成绩</a></div>
-                        <div>
-                            <a href="">我的书籍</a></div>
-                    </div>
                     <div class="ta1">
-                        <strong>学习中心</strong><div class="leftbgbt2">
+                        <strong>家长社区</strong><div class="leftbgbt2">
                         </div>
                     </div>
                     <div class="cdlist">
                         <div>
-                            <a href="">资料下载</a></div>
+                            <a href="/article/pull/">文章列表</a></div>
                         <div>
-                            <a href="">学习历程</a></div>
+                            <a href="/article/add/">我要发帖</a></div>
                     </div>
-                   
-                    <div class="ta1">
-                        <strong>财务中心</strong><div class="leftbgbt2">
-                        </div>
-                    </div>
-                    <div class="cdlist">
-                        <div>
-                            <a href="">我的财务</a></div>
-                    </div>
-<div class="ta1">
-                        <a href=""><strong>教学系统</strong></a>
+					<div class="ta1">
+                        <a href="www.bupt.edu.cn"><strong>学校官网</strong></a>
                         <div class="leftbgbt2">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="rightbox">
-			{% block content %}
-			{% endblock %}
+			{% if user %}
+				{% block content %}
+				{% endblock %}
+			{% else %}
+			<div class="cztable">
+				<tbody>
+					<div style="height: 28px" class="tdbg" align="left">
+						<a colspan="13" align="left" style="color: Red; font-weight:bold;">
+							请先登录!
+						</a>
+					</div>
+				</tbody>
+			</div>
+			{% endif %}
 			</div>		
         </div>
         <div class="footer"><p>©copyright 2012 广博教育 csgb.net 版权所有 站长统计</p></div>
