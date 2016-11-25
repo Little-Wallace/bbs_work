@@ -1,4 +1,76 @@
 {% extends "base.html" %}
 {% block content %}
-
+<script type="text/javascript">
+function addmessage() {
+	$.post('/message/add/', {
+		title: $("#Mtitle").val(),
+		user_id: $("#user_id").val(),
+		desc: $("Mdesc").val(),
+	}, function(data) {
+		if (data.code == 0) {
+			window.location = '/message/list/';
+		}
+	}, "json");
+}
+</script>
+<div class="morebt">
+<ul id="ulStudMsgHeadTab">
+    <li><a class="tab2" onclick="" href="/">个人信息</a> </li>
+    <li><a class="tab2" onclick="" href="/homework/">作业监督</a></li>
+    <li><a class="tab2" onclick="" href="/grade/">学生成绩</a></li>
+    <li><a class="tab2" onclick="" href="/article/">文章推送</a></li>
+    <li><a class="tab2" onclick="" href="/message/list/">通知发布<span style="color:#ff0000; padding-left:5px;" id="unreadSysMsgCount"></span></a></li>
+</ul>
+</div>
+<div class="cztable">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <th style="text-align:left;" width="5%">序号</th>
+            <th style="text-align:left;" width="30%">标题</th>
+            <th width="15%">来源</th>
+            <th style="text-align:left;" width="10%">添加时间</th>
+            <th style="text-align:left;" width="8%">状态</th>
+        </tr>
+		{% if messages %}   
+			{% for m in messages %}
+				<tr>
+					<td style="text-align:left;" width="5%">{{ m.id }}</td>
+					<td style="text-align:left;" width="30%"><a href="/message/{{ m.id }}/">{{ m.title }}</a></td>
+					<td width="15%">{{ m.author }}</td>
+					<td style="text-align:left;" width="10%"> {{ m.create_time }}</td>
+					<td style="text-align:left;" width="8%">{{ m.status }}</td>
+				</tr>
+		{% else %}
+        <tr style="height: 28px" class="tdbg" align="left">
+            <td colspan="13" align="left" style="color: Red; font-weight:bold;">未找到通知信息!</td>
+        </tr>
+		{% endif %}
+    </table>
+</div>
+{% if user.identity == 2 %}
+<div class="cztable">
+<h2 class="mbx">发布通知 &gt;</h2>
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="15%" align="right"><div align="right">通知主题： </div></td>
+            <td><input id="Mtitle" size="20" name="Ctitle" class="input_2"/></td>
+        </tr>
+        <tr>
+            <td width="15%" align="right"><div align="right">通知学生的学号： </div></td>
+            <td><input id="Mnumber" size="20" name="Ctitle" class="input_2"/></td>
+        </tr>
+        <tr>
+            <td width="15%" align="right"><div align="right">通知内容： </div></td>
+            <td><textarea name="Mcontent" cols="80" rows="5" id="Mdesc" class="input_2"></textarea></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <div align="center" >
+                    <input type="submit" value="提交" onclick="addmessage();" class="input2" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,13 +1,10 @@
-from app.models import User, session
+from app.models import User, session, Group
+from flask import url_for
 
 if __name__ == '__main__':
-    u = User(id=198964)
-    u.name='jiangzemin'
-    u.password='xixihaha'
-    session.add(u)
-    session.commit()
-    if u:
-        print u.name
-    else:
-        print 'None'
+    u = session.query(User).first()
+    g = session.query(Group).all()
+    print u.group_id
+    for r in g:
+        print r.id
 

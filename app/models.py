@@ -55,21 +55,6 @@ class User(Base):
     def getById(cls, id):
         return session.query(cls).filter(cls.id==id).first()
 
-class Group(Base):
-
-    __tablename__ = 'group'
-
-    id = Column(Integer(), primary_key=True)
-    name = Column(String(32))
-    teacher = Column(String(32))
-    phone = Column(String(32))
-    desc = Column(String(32))
-
-    @classmethod
-    def getById(cls, group_id):
-        return session.query(cls).filter(cls.id==group_id).first()
- 
-
 class Message(Base):
 
     __tablename__ = 'message'
@@ -79,7 +64,17 @@ class Message(Base):
     title = Column(String(256))
     style = Column(String(32))
     status = Column(String(20))
+    author = Column(String(20))
+    user_id = Column(Integer())
     create_time = Column(DateTime(), default=datetime.now())
+
+    @classmethod
+    def getById(cls, id):
+        return session.query(cls).filter(cls.id==id).first()
+
+    @classmethod
+    def getByUserId(cls, id):
+        return session.query(cls).filter(cls.user_id==id).first()
 
 class Topic(Base):
 

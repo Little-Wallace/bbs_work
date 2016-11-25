@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="morebt">
+<ul id="ulStudMsgHeadTab">
+    <li><a class="tab2" onclick="" href="/">个人信息</a> </li>
+    <li><a class="tab2" onclick="" href="/homework/">作业监督</a></li>
+    <li><a class="tab2" onclick="" href="/grade/">学生成绩</a></li>
+    <li><a class="tab2" onclick="" href="/article/">文章推送</a></li>
+    <li><a class="tab2" onclick="" href="/message/list/">通知发布<span style="color:#ff0000; padding-left:5px;" id="unreadSysMsgCount"></span></a></li>
+</ul>
+</div>
+<div class="cztable">
+	{% if message %}   
+	<div><p>{{ message.title }} </p></div>
+	<div><p>{{ message.desc }} </p></div>
+	{% endif %}
+</div>
+{% endblock %}

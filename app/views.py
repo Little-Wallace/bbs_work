@@ -1,10 +1,11 @@
 from functools import wraps
 import json
-from flask import g, session, request, make_response, Response
+from flask import g, session, request, make_response, Response, url_for
 from flask.blueprints import Blueprint
 from flask import render_template, redirect
 from app import bbs_app
-from models import User, Group, Message
+from models import User, Topic, Message
+from models import session as sess
 
 # views_app = Blueprint('views_app', __name__)
 
@@ -19,11 +20,15 @@ def login_required(func):
 
 @bbs_app.before_request
 def load_user():
-    if session.has_key('user_id') and session['user_id']:
+    if not session.has_key('user_id'):
+        return
+    if session['user_id']:
+        print session['user_id']
         user = User.getById(int(session['user_id']))
-        print type(user)
-        print user
-        g.user = user
+        if user:
+            print type(user)
+            print user
+            g.user = user
 
 @bbs_app.route('/login/', methods=['POST'])
 def login_post():
@@ -51,6 +56,7 @@ def login_post():
 
 @bbs_app.route('/', methods=['GET'])
 def index():
+    print url_for('static', filename='js/Data.js')
     if hasattr(g, 'user') and g.user:
         print "login"
         print g.user.__dict__
@@ -59,21 +65,46 @@ def index():
         print "no login"
         return render_template('base.html')
 
-@bbs_app.route('/classinfo/', methods=['GET'])
-@login_required
-def group_info():
-    cl = Group.getById(g.user.id)
-    print '============================='
-    return render_template('class.html', user=g.user, group=cl);
-
-@bbs_app.route('/letter/', methods=['GET'])
+@bbs_app.route('/message/list/', methods=['GET'])
 @login_required
 def message_list():
-    messages = Letter.getByUserId(g.user.id)
+    messages = Message.getByUserId(g.user.id)
     if messages and len(messages) > 0:
-        return render_template('letter.html', user=g.user, messages=messages);
+        return render_template('message.html', user=g.user, messages=messages);
     else:
-        return render_template('letter.html', user=g.user)
+        return render_template('message.html', user=g.user)
+
+@bbs_app.route('/message/<int:m_id>/', methods=['GET'])
+@login_required
+def message_info(m_id):
+    m = Message.getById(m_id)
+    if not m:
+        return render_template('error.html', user=g.user, error='haha')
+    if m.user_id != g.user.id:
+        return render_template('error.html', user=g.user, error='xixi')
+    m.status = u'haha'
+    return render_template('message_content.html', user=g.user, message=m)
+
+@bbs_app.route('/message/add/', methods=['POST'])
+@login_required
+def addmessage():
+    if g.user.identity != User.TEACHER:
+        return render_template('error.html', user=g.user, error=u'haha')
+    m = Message()
+    m.title = request.form.get('title', None)
+    m.desc = request.form.get('desc', None)
+    m.user_id = request.form.get('user_id', None)
+    m.author = g.user.name
+    m.status = u'haha'
+    resp = Response()
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    try:
+        sess.add(m)
+        sess.commit()
+        resp.data = json.dumps({'code':0})
+    except Exception, ex:
+        resp.data = json.dumps({'code': -1, 'reason': ex})
+    return resp
 
 @bbs_app.route('/homework/', methods=['GET'])
 @login_required
@@ -83,4 +114,7 @@ def homework_list():
         return render_template('homework.html', user=g.user, works=works);
     else:
         return render_template('homework.html', user=g.user)
+
+
+
 
