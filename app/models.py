@@ -8,7 +8,7 @@ from datetime import datetime
 __author__ = 'xixihaha'
 
 Base = declarative_base()
-engine = create_engine('mysql+mysqldb://root:123456@localhost:3306/bbs?charset=utf8', echo=True)
+engine = create_engine('mysql+mysqldb://root: 7@localhost:3306/bbs?charset=utf8', echo=True)
 DBsession = sessionmaker(bind=engine)
 session = DBsession()
 
@@ -54,6 +54,23 @@ class User(Base):
     @classmethod
     def getById(cls, id):
         return session.query(cls).filter(cls.id==id).first()
+
+class ChatInfo(Base):
+	
+	__tablename__ = 'chatinfo'
+
+	id = Column(Integer(), primary_key = True)
+	sender = Column(String(256))
+	to = Column(String(256))
+	content = Column(String(256))
+	create_time = Column(DateTime(), default=datetime.now())
+	
+	@classmethod
+	def getAll(cls):
+		return session.query(cls).all()
+	@classmethod
+	def getBySenderAndTo(cls, sender_id, to_id)
+		return session.query(cls).filter(cls.sender == sender_id and cls.to == to_id).all()
 
 class Message(Base):
 
@@ -117,16 +134,20 @@ if __name__ == '__main__':
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     u = User(id=198964, group_id=123)
-    u.name=u'江泽民'
+    u.name=u'ChenSijia'
     u.password='xixihaha'
     l = Message(id=123)
-    l.desc = u'敢同恶鬼争高下' 
-    l.title = u'一派胡言'
-    l.status = u'未读'
-    g = Group(id=123)
-    g.name= u'三年级二班'
-    g.teacher=u'北大教授王铁崖'
+    l.desc = 'XIXI' 
+    l.title = 'XIXI'
+    l.status = 'XIXI'
+    ca = ChatInfo(id=0, sender = 'A', to = 'B', content = 'C')
+    cb = ChatInfo(id=4, sender = 'B', to = 'A', content = 'D')
+    session.add(ca)
+    session.add(cb)
+    #g = Group(id=123)
+   # g.name= u'三年级二班'
+   # g.teacher=u'北大教授王铁崖'
     session.add(u)
     session.add(l)
-    session.add(g)
+    #session.add(g)
     session.commit()

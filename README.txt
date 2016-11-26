@@ -1,9 +1,9 @@
 # 
-sudo apt-get install python-setuptools
+#sudo apt-get install python-setuptools
 # 创建虚拟环境
-sudo easy_install virtualenv
-virtualenv venv
-source venv/bin/activate
+#sudo easy_install virtualenv
+#virtualenv venv
+#source venv/bin/activate
 pip install Flask
 pip install SQLAlchemy
 # mysqldb相关依赖

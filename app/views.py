@@ -23,31 +23,31 @@ def load_user():
     if not session.has_key('user_id'):
         return
     if session['user_id']:
-        print session['user_id']
+        #print session['user_id']
         user = User.getById(int(session['user_id']))
         if user:
-            print type(user)
-            print user
+           # print type(user)
+           # print user
             g.user = user
 
 @bbs_app.route('/login/', methods=['POST'])
 def login_post():
-    print "here"
-    print request.method
+    #print "here"
+    #print request.method
     if request.method == 'POST':
-        print request.form
+       # print request.form
         user = User.check(request.form.get('username', None), request.form.get('password', None))
         resp = Response()
         resp.headers['Access-Control-Allow-Origin'] = '*'
-        print session
+        #print session
         if user:
-            print "True"
+           # print "True"
             session['logged_in'] = True
             session['user_id'] = user.id
             resp.data = json.dumps({'code':0})
             g.user = user
-            print g.user.id
-            print resp
+           # print g.user.id
+           # print resp
             return resp
         else:
             resp.data = json.dumps({'code': -1, 'reason': 'password or username wrong'})
@@ -56,13 +56,13 @@ def login_post():
 
 @bbs_app.route('/', methods=['GET'])
 def index():
-    print url_for('static', filename='js/Data.js')
+   # print url_for('static', filename='js/Data.js')
     if hasattr(g, 'user') and g.user:
-        print "login"
-        print g.user.__dict__
+       # print "login"
+       # print g.user.__dict__
         return render_template('index.html', user=g.user)
     else:
-        print "no login"
+       # print "no login"
         return render_template('base.html')
 
 @bbs_app.route('/message/list/', methods=['GET'])
