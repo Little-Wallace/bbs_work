@@ -13,4 +13,5 @@ sudo apt-get install libevent-dev
 sudo apt-get install zlib1g-dev
 pip install MySQL-python
 
-
+# pip freeze > requirements.txt # use this command to output the packages
+# pip install -r requirements.txt # install the packages
