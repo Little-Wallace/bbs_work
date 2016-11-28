@@ -12,10 +12,10 @@ from models import session as sess
 def login_required(func):
     @wraps(func)
     def _decorator(*args, **kwargs):
-        if session.has_key('logged_in'):
+        if session.has_key('logged_in') and session['logged_in'] == True:
             return func(*args, **kwargs)
         else:
-            return redirect('/')
+            return redirect('/login/')
     return _decorator
 
 @bbs_app.before_request
@@ -30,7 +30,7 @@ def load_user():
            # print user
             g.user = user
 
-@bbs_app.route('/login/', methods=['POST'])
+@bbs_app.route('/logincc/', methods=['POST'])
 def login_post():
     #print "here"
     #print request.method
@@ -54,8 +54,8 @@ def login_post():
         return resp
     return redirect('/')
 
-@bbs_app.route('/', methods=['GET'])
-def index():
+@bbs_app.route('/haha', methods=['GET'])
+def index_liuwei():
    # print url_for('static', filename='js/Data.js')
     if hasattr(g, 'user') and g.user:
        # print "login"
@@ -63,7 +63,7 @@ def index():
         return render_template('index.html', user=g.user)
     else:
        # print "no login"
-        return render_template('base.html')
+        return redirect('/login/')
 
 @bbs_app.route('/message/list/', methods=['GET'])
 @login_required

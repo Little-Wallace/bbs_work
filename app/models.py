@@ -69,7 +69,7 @@ class ChatInfo(Base):
 	def getAll(cls):
 		return session.query(cls).all()
 	@classmethod
-	def getBySenderAndTo(cls, sender_id, to_id)
+	def getBySenderAndTo(cls, sender_id, to_id):
 		return session.query(cls).filter(cls.sender == sender_id and cls.to == to_id).all()
 
 class Message(Base):
