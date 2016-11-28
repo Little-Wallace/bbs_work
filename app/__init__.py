@@ -8,5 +8,5 @@ bbs_app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 bootstrap = Bootstrap(bbs_app)
 # sess.init_app(bbs_app)
 import views
-import PartOfJsc
+import chart
 

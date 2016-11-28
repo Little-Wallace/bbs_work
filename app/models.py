@@ -3,12 +3,13 @@ from sqlalchemy.orm import mapper, sessionmaker
 from sqlalchemy import Column, String, create_engine, DateTime, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql import TEXT
+from sqlalchemy.sql import func
 from datetime import datetime
 
 __author__ = 'xixihaha'
 
 Base = declarative_base()
-engine = create_engine('mysql+mysqldb://root:l1admin@localhost:3306/bbs?charset=utf8', echo=True)
+engine = create_engine('mysql+mysqldb://root:123456@localhost:3306/bbs?charset=utf8', echo=True)
 DBsession = sessionmaker(bind=engine)
 session = DBsession()
 
@@ -35,7 +36,7 @@ class User(Base):
     school = Column(String(20))
     qq = Column(String(20))
     email = Column(String(20))
-    sign_time = Column(DateTime(), default=datetime.now())
+    sign_time = Column(DateTime(timezone=True), default=func.now())
     extra = Column(String(256))
     id_card = Column(String(32))
     test_number = Column(String(32))
@@ -61,20 +62,20 @@ class User(Base):
 
 class ChatInfo(Base):
 	
-	__tablename__ = 'chatinfo'
+    __tablename__ = 'chatinfo'
 
-	id = Column(Integer(), primary_key = True)
-	sender = Column(String(256))
-	to = Column(String(256))
-	content = Column(String(256))
-	create_time = Column(DateTime, default=datetime.now())
+    id = Column(Integer(), primary_key = True)
+    sender = Column(String(256))
+    to = Column(String(256))
+    content = Column(String(256))
+    create_time = Column(DateTime(timezone=True), default=func.now())
 	
-	@classmethod
-	def getAll(cls):
-		return session.query(cls).all()
-	@classmethod
-	def getBySenderAndTo(cls, sender_id, to_id):
-		return session.query(cls).filter(cls.sender == sender_id and cls.to == to_id).all()
+    @classmethod
+    def getAll(cls):
+        return session.query(cls).all()
+    @classmethod
+    def getBySenderAndTo(cls, sender_id, to_id):
+        return session.query(cls).filter(cls.sender == sender_id and cls.to == to_id).all()
 
 class Message(Base):
 

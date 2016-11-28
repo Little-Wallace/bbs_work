@@ -1,10 +1,10 @@
-from app.models import User, session, Group
+#encoding: utf-8
+from app.models import User, session, Group, ChatInfo
 from flask import url_for
 
 if __name__ == '__main__':
-    u = session.query(User).first()
-    g = session.query(Group).all()
-    print u.group_id
-    for r in g:
-        print r.id
+    c = ChatInfo()
+    c.content = u'蛤蛤'
+    session.add(c)
+    session.commit()
 
