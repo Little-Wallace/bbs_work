@@ -24,10 +24,14 @@
 		</header>
 		<div class="clearfix"></div>
 		<div class="chat_window">
-			<p>You're now chatting with a teacher, say hi~ <br/> </p>
+			<p>You're now chatting with a teacher, say hi~ {{other_id}} <br/> </p>
 			{% for i in information %}
 				<div class="msg" style="opacity: 1; width: 100%; display: block;">
+					{%  if i.sender != other_id %}
 					<span style="color:#6495ED;">{{ i.sender }}</span>
+					{% else %}
+					<span style="color:#FF7F50;">{{ i.sender }}</span>
+					{% endif %}
 					<span style="color:#808080">({{ i.create_time }}):</span> <br/>
 					<p style="text-indent:1em;">{{ i.content }}</p>
 				</div>

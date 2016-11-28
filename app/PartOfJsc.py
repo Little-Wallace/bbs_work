@@ -10,6 +10,7 @@ from views import login_required
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, SubmitField, HiddenField, PasswordField
 from wtforms.validators import Required
+from datetime import datetime
 
 # views_app = Blueprint('views_app', __name__)
 
@@ -31,8 +32,8 @@ def logout():
 @bbs_app.route('/login/', methods=['GET', 'POST'])
 def login():
 	form = InputNameAndPassword()
-	form.username.data = 198964
-	form.password.data = 'xixihaha'
+	form.username.data = 1
+	form.password.data = '11'
 	if form.validate_on_submit():
 		id = form.username.data
 		password = form.password.data
@@ -55,16 +56,33 @@ def register():
 def index():
 	return render_template('base_csj.html', user = g.user)
 
-@bbs_app.route('/communication/', methods=['GET','POST'])
+@bbs_app.route('/chattinglist/', methods=['GET'])
 @login_required
-def chat():
-	Information = ChatInfo.getAll()
+def chattinglist():
+	users = User.getAll()
+	return render_template('chattinglist.html', user = g.user, users = users)
+
+@bbs_app.route('/communication/<other_id>', methods=['GET','POST'])
+@login_required
+def chat(other_id):
+	a = ChatInfo.getBySenderAndTo(g.user.id, other_id)
+	b = ChatInfo.getBySenderAndTo(other_id, g.user.id)
+	c = ChatInfo.getAll()
+	#mergelist = sorted(a+b, key = lambda ChatInfo:ChatInfo.create_time)
 	form = InputInfo()
+	print "S~~~~~~~~~~~~~~~"
+	print form.validate_on_submit()
+	for i in c:
+		print i.create_time
+	print "E~~~~~~~~~~~~~~~"
 	if form.validate_on_submit():
 		msg = form.content.data
+		print "HaHa~~~~~~~~~~~~~~~"
+		print msg, " ", datetime.now()
+		print "Xixi~~~~~~~~~~~~~~~"
 		form.content.data = ''
-		cc = ChatInfo(id=0, sender = g.user.name, to = 'xixi', content = msg)
+		cc = ChatInfo(id=0, sender = g.user.id, to = other_id, content = msg)
 		sess.add(cc)
 		sess.commit()
-		return redirect(url_for('chat'))
-	return render_template('chat_room.html', information = Information, form = form)
+		return redirect('/communication/' + other_id)
+	return render_template('chat_room.html', information = a + b, form = form, other_id = other_id)
