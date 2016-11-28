@@ -8,7 +8,7 @@ from datetime import datetime
 __author__ = 'xixihaha'
 
 Base = declarative_base()
-engine = create_engine('mysql+mysqldb://root: 7@localhost:3306/bbs?charset=utf8', echo=True)
+engine = create_engine('mysql+mysqldb://root:l1admin@localhost:3306/bbs?charset=utf8', echo=True)
 DBsession = sessionmaker(bind=engine)
 session = DBsession()
 
