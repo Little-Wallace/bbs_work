@@ -55,6 +55,10 @@ class User(Base):
     def getById(cls, id):
         return session.query(cls).filter(cls.id==id).first()
 
+    @classmethod
+    def getAll(cls):
+        return session.query(cls).all()
+
 class ChatInfo(Base):
 	
 	__tablename__ = 'chatinfo'
@@ -63,7 +67,7 @@ class ChatInfo(Base):
 	sender = Column(String(256))
 	to = Column(String(256))
 	content = Column(String(256))
-	create_time = Column(DateTime(), default=datetime.now())
+	create_time = Column(DateTime, default=datetime.now())
 	
 	@classmethod
 	def getAll(cls):
@@ -133,21 +137,29 @@ class Comment(Base):
 if __name__ == '__main__':
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    u = User(id=198964, group_id=123)
-    u.name=u'ChenSijia'
-    u.password='xixihaha'
+    a = User(id=0, name = "ChenSijia", password = "11")
+    b = User(id=0, name = "Liuwei", password = "11")
+    c = User(id=0, name = "Baihao", password = "11")
+    d = User(id=0, name = "Wujingsheng", password = "11")
     l = Message(id=123)
     l.desc = 'XIXI' 
     l.title = 'XIXI'
     l.status = 'XIXI'
-    ca = ChatInfo(id=0, sender = 'A', to = 'B', content = 'C')
-    cb = ChatInfo(id=4, sender = 'B', to = 'A', content = 'D')
+    ca = ChatInfo(id=0, sender = 1, to = 2, content = 'aa')
+    cb = ChatInfo(id=0, sender = 2, to = 1, content = 'bb')
+    cc = ChatInfo(id=0, sender = 1, to = 2, content = 'cc')
+    dd = ChatInfo(id=0, sender = 2, to = 1, content = 'dd')
     session.add(ca)
     session.add(cb)
+    session.add(cc)
+    session.add(dd)
     #g = Group(id=123)
    # g.name= u'三年级二班'
    # g.teacher=u'北大教授王铁崖'
-    session.add(u)
+    session.add(a)
+    session.add(b)
+    session.add(c)
+    session.add(d)
     session.add(l)
     #session.add(g)
     session.commit()

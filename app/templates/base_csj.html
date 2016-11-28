@@ -50,7 +50,7 @@
                     <a href="/"><i class="fa fa-flask"></i> <span class="nav-label">通知发布</span></a>
                 </li>
                 <li>
-                    <a href="/"><i class="fa fa-desktop"></i> <span class="nav-label">在线交流</span></a>
+                    <a href="/chattinglist/"><i class="fa fa-desktop"></i> <span class="nav-label">在线交流</span></a>
                 </li>
                 <li>
                     <a href="/"><i class="fa fa-globe"></i> <span class="nav-label">家长社区</span></a>
@@ -188,19 +188,20 @@
                     </ol>
                 </div>
             </div>
-
+		{% block page_content %}
             <div class="wrapper wrapper-content">
                 <div class="middle-box text-center animated fadeInRightBig">
-					{% block page_content %}
+					
                     <h3 class="font-bold">This is page content</h3>
                     <div class="error-desc">
                         You can create here any grid layout you want. And any variation layout you imagine:) Check out
                         main dashboard and other site. It use many different layout.
                         <br/><a href="index.html" class="btn btn-primary m-t">Dashboard</a>
                     </div>
-					{% endblock %}
+					
                 </div>
             </div>
+		{% endblock %}
             <div class="footer">
                 <div>
                     <strong>Copyright</strong> MoChen And XixiHaha &copy; 2016
