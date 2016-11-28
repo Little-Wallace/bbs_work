@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>icon_room</title>
+	<link rel="shortcut icon" href="images/title_icon.png">
+	<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/chat_room.css">
+</head>
+<body>
+	<div>
+		<header>
+			<div class="left">
+				<!--img src="images/header_1.png"-->
+				<a href="/"><i class="fa fa-arrow-left"></i></a>
+			</div>
+			<div class="middle">
+				MoMo Chatting Room
+			</div>
+			<div class="right">
+				<p>Designed by<span>MoChen</span></p>
+			</div>
+		</header>
+		<div class="clearfix"></div>
+		<div class="chat_window">
+			<p>You're now chatting with a teacher, say hi~ <br/> </p>
+			{% for i in information %}
+				<div class="msg" style="opacity: 1; width: 100%; display: block;">
+					<span style="color:#6495ED;">{{ i.sender }}</span>
+					<span style="color:#808080">({{ i.create_time }}):</span> <br/>
+					<p style="text-indent:1em;">{{ i.content }}</p>
+				</div>
+			{% endfor %}
+		</div>
+		<div class="bottom_control">
+			<!--button class="esc">New Esc</button-->
+			{% import "bootstrap/wtf.html" as wtf %}
+			<form class="form" method="POST">
+				{{ form.hidden_tag() }}
+				{{ wtf.form_field(form.content, class="text_area") }}
+				{{ wtf.form_field(form.submit, class="send") }}
+			</form>
+			<!--textarea></textarea-->
+			<!--button class="send" onclick = "sendinfo">Send Enter</button-->
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../static/js/chat_room.js"></script>
+</html>
