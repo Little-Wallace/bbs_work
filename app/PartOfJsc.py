@@ -32,8 +32,6 @@ def logout():
 @bbs_app.route('/login/', methods=['GET', 'POST'])
 def login():
 	form = InputNameAndPassword()
-	form.username.data = 1
-	form.password.data = '11'
 	if form.validate_on_submit():
 		id = form.username.data
 		password = form.password.data
@@ -67,22 +65,15 @@ def chattinglist():
 def chat(other_id):
 	a = ChatInfo.getBySenderAndTo(g.user.id, other_id)
 	b = ChatInfo.getBySenderAndTo(other_id, g.user.id)
-	c = ChatInfo.getAll()
-	#mergelist = sorted(a+b, key = lambda ChatInfo:ChatInfo.create_time)
+	mergelist = sorted(a+b, key = lambda ChatInfo:ChatInfo.create_time)
 	form = InputInfo()
-	print "S~~~~~~~~~~~~~~~"
-	print form.validate_on_submit()
-	for i in c:
-		print i.create_time
-	print "E~~~~~~~~~~~~~~~"
 	if form.validate_on_submit():
 		msg = form.content.data
-		print "HaHa~~~~~~~~~~~~~~~"
-		print msg, " ", datetime.now()
-		print "Xixi~~~~~~~~~~~~~~~"
 		form.content.data = ''
 		cc = ChatInfo(id=0, sender = g.user.id, to = other_id, content = msg)
 		sess.add(cc)
 		sess.commit()
 		return redirect('/communication/' + other_id)
-	return render_template('chat_room.html', information = a + b, form = form, other_id = other_id)
+	return render_template('chat_room.html', information = mergelist, form = form, other_id = other_id)
+
+

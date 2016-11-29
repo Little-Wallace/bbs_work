@@ -4,6 +4,7 @@ from sqlalchemy import Column, String, create_engine, DateTime, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql import TEXT
 from datetime import datetime
+from sqlalchemy.sql import func
 
 __author__ = 'xixihaha'
 
@@ -67,7 +68,7 @@ class ChatInfo(Base):
 	sender = Column(String(256))
 	to = Column(String(256))
 	content = Column(String(256))
-	create_time = Column(DateTime, default=datetime.now())
+	create_time = Column(DateTime(timezone=True), default=func.now())
 	
 	@classmethod
 	def getAll(cls):
