@@ -84,3 +84,7 @@ def page_not_found(e):
 def internal_server_error(e):
 	return render_template('500.html'), 500
 
+@bbs_app.route('/bbslist/', methods=['GET'])
+@login_required
+def bbs_list():
+	return render_template('bulletin_board_list.html', user = g.user)
