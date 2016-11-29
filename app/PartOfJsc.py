@@ -76,4 +76,11 @@ def chat(other_id):
 		return redirect('/communication/' + other_id)
 	return render_template('chat_room.html', information = mergelist, form = form, other_id = other_id)
 
+@bbs_app.errorhandler(404)
+def page_not_found(e):
+	return render_template('404.html'), 404
+	
+@bbs_app.errorhandler(500)
+def internal_server_error(e):
+	return render_template('500.html'), 500
 
