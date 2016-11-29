@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql import TEXT
 from sqlalchemy.sql import func
 from datetime import datetime
+from sqlalchemy.sql import func
 
 __author__ = 'xixihaha'
 
