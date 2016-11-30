@@ -13,6 +13,7 @@ Base = declarative_base()
 engine = create_engine('mysql+mysqldb://root:l1admin@localhost:3306/bbs?charset=utf8', echo=True)
 DBsession = sessionmaker(bind=engine)
 session = DBsession()
+NameList = [('Math','default') ,('English','primary'), ('Chemistry','success'), ('Sport','info'), ('Psychology','warning'), ('Computer Science', 'danger')]
 
 class User(Base):
 
@@ -101,15 +102,43 @@ class Message(Base):
 
 class Topic(Base):
 
-    __tablename__ = 'topic'
+	__tablename__ = 'topic'
 
-    id = Column(Integer(), primary_key=True)
-    desc = Column(TEXT)
-    author = Column(String(28))
-    style = Column(Integer())
-    title = Column(String(36))
-    create_time = Column(DateTime(), default=datetime.now())
+	id = Column(Integer(), primary_key=True)
+	content = Column(TEXT)
+	author = Column(Integer())
+	flag = Column(Integer())
+	title = Column(String(36))
+	create_time = Column(DateTime(timezone=True), default=func.now())	
+	@classmethod
+	def getAll(cls):
+		return session.query(cls).all()
+	@classmethod
+	def getByid(cls, id):
+		return session.query(cls).filter(cls.id==id).first()
+	@classmethod
+	def getByFlag(cls, flag_id):
+		return session.query(cls).filter(cls.flag==flag_id).all()
+	@classmethod
+	def getByAuthor(cls, author_id):
+		return session.query(cls).filter(cls.author==author_id).all()
 
+class Comment_Topic(Base):
+	
+	__tablename__ = 'comment_topic'
+	
+	id = Column(Integer(), primary_key=True)
+	content = Column(TEXT)
+	author = Column(Integer())
+	topic_id = Column(Integer())
+	create_time = Column(DateTime(timezone=True), default=func.now())
+
+	@classmethod
+	def getAll(cls):
+		return session.query(cls).all()
+	@classmethod
+	def getByTopic(cls, topic_id):
+		return session.query(cls).filter(cls.topic_id == topic_id).all()
 
 class Article(Base):
 
@@ -137,31 +166,26 @@ class Comment(Base):
 
 
 if __name__ == '__main__':
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    a = User(id=0, name = "ChenSijia", password = "11")
-    b = User(id=0, name = "Liuwei", password = "11")
-    c = User(id=0, name = "Baihao", password = "11")
-    d = User(id=0, name = "Wujingsheng", password = "11")
-    l = Message(id=123)
-    l.desc = 'XIXI' 
-    l.title = 'XIXI'
-    l.status = 'XIXI'
-    ca = ChatInfo(id=0, sender = 1, to = 2, content = 'aa')
-    cb = ChatInfo(id=0, sender = 2, to = 1, content = 'bb')
-    cc = ChatInfo(id=0, sender = 1, to = 2, content = 'cc')
-    dd = ChatInfo(id=0, sender = 2, to = 1, content = 'dd')
-    session.add(ca)
-    session.add(cb)
-    session.add(cc)
-    session.add(dd)
-    #g = Group(id=123)
-   # g.name= u'三年级二班'
-   # g.teacher=u'北大教授王铁崖'
-    session.add(a)
-    session.add(b)
-    session.add(c)
-    session.add(d)
-    session.add(l)
-    #session.add(g)
-    session.commit()
+	Base.metadata.drop_all(engine)
+	Base.metadata.create_all(engine)
+	a = User(id=0, name = "ChenSijia", password = "11")
+	b = User(id=0, name = "Liuwei", password = "11")
+	c = User(id=0, name = "Baihao", password = "11")
+	d = User(id=0, name = "Wujingsheng", password = "11")
+	session.add(a)
+	session.add(b)
+	session.add(c)
+	session.add(d)
+	ca = ChatInfo(id=0, sender = 1, to = 2, content = 'aa')
+	cb = ChatInfo(id=0, sender = 2, to = 1, content = 'bb')
+	cc = ChatInfo(id=0, sender = 1, to = 2, content = 'cc')
+	dd = ChatInfo(id=0, sender = 2, to = 1, content = 'dd')
+	session.add(ca)
+	session.add(cb)
+	session.add(cc)
+	session.add(dd)
+	session.add(Topic(id = 0, content = "WoLeigequ", title = "My First Topic in MoMo BBS", flag = 1, author = 1))
+	session.add(Topic(id = 0, content = "LiuweiLiuxiaowei", title = "Liuwei's new girl-friend", flag = 2, author = 2))
+	session.add(Topic(id = 0, content = "XiXi XiXi HaHa", title = "Do you know I mean what??", flag = 3, author = 3))
+	session.add(Topic(id = 0, content = "sdadasda", title = "Do you love me?", flag = 4, author = 4))
+	session.commit()
