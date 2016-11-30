@@ -33,9 +33,9 @@ def logout():
 def login():
 	form = InputNameAndPassword()
 	if form.validate_on_submit():
-		id = form.username.data
+		mail = form.username.data
 		password = form.password.data
-		user = User.check(id, password)
+		user = User.check(mail, password)
 		if user:
 			session['logged_in'] = True
 			session['user_id'] = user.id

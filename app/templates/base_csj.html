@@ -8,11 +8,11 @@
 
     <title>Base Page</title>
 
-    <link href="../static/css/cssBycsj/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../static/css/cssBycsj/font-awesome/css/font-awesome.css" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/cssBycsj/css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/cssBycsj/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
 
-    <link href="../static/css/cssBycsj/css/animate.css" rel="stylesheet">
-    <link href="../static/css/cssBycsj/css/style.css" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/cssBycsj/css/animate.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/cssBycsj/css/style.css') }}" rel="stylesheet">
 
 </head>
 
@@ -47,7 +47,7 @@
                     <a href="/"><i class="fa fa-diamond"></i> <span class="nav-label">文章推送</span></a>
                 </li>
                 <li>
-                    <a href="/"><i class="fa fa-flask"></i> <span class="nav-label">通知发布</span></a>
+                    <a href="/message/list/"><i class="fa fa-flask"></i> <span class="nav-label">通知发布</span></a>
                 </li>
                 <li>
                     <a href="/chattinglist/"><i class="fa fa-desktop"></i> <span class="nav-label">在线交流</span></a>
@@ -77,7 +77,8 @@
                         <li>
                             <div class="dropdown-messages-box">
                                 <a href="profile.html" class="pull-left">
-                                    <img alt="image" class="img-circle" src="img/a7.jpg">
+									<img alt="image" class="img-circle" \
+									src="{{ url_for('static', filename='img/a7.jpg') }}">
                                 </a>
                                 <div class="media-body">
                                     <small class="pull-right">46h ago</small>
@@ -90,7 +91,8 @@
                         <li>
                             <div class="dropdown-messages-box">
                                 <a href="profile.html" class="pull-left">
-                                    <img alt="image" class="img-circle" src="img/a4.jpg">
+                                    <img alt="image" class="img-circle" \
+										src="{{ url_for('static', filename='img/a4.jpg') }}">
                                 </a>
                                 <div class="media-body ">
                                     <small class="pull-right text-navy">5h ago</small>
@@ -103,7 +105,8 @@
                         <li>
                             <div class="dropdown-messages-box">
                                 <a href="profile.html" class="pull-left">
-                                    <img alt="image" class="img-circle" src="img/profile.jpg">
+                                    <img alt="image" class="img-circle" \
+										src="{{ url_for('static', filename='img/profile.jpg') }}">
                                 </a>
                                 <div class="media-body ">
                                     <small class="pull-right">23h ago</small>
@@ -179,12 +182,14 @@
                 <div class="col-sm-4">
                     <h2>{% block page_title %} ChenSijia is very handsome !{% endblock %}</h2>
                     <ol class="breadcrumb">
+						 {% block page_kind %}
                         <li>
-                            <a href="index.html">Home</a>
+                            <a href="/">Home</a>
                         </li>
                         <li class="active">
-                            <strong> {% block page_kind %} Home {% endblock %}</strong>
+                            <strong> Home </strong>
                         </li>
+						{% endblock %}
                     </ol>
                 </div>
             </div>
@@ -212,14 +217,14 @@
         </div>
 
     <!-- Mainly scripts -->
-    <script src="js/jquery-2.1.1.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="{{ url_for('static', filename='js/jquery-2.1.1.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
 
     <!-- Custom and plugin javascript -->
-    <script src="js/inspinia.js"></script>
-    <script src="js/plugins/pace/pace.min.js"></script>
+	<script src="{{ url_for('static', filename='js/inspinia.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/pace/pace.min.js') }}"></script>
 
 
 </body>

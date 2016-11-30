@@ -1,0 +1,165 @@
+{% extends 'base_csj.html' %}
+{% block page_kind %}
+通知发布
+{% endblock %}
+{% block page_content %}
+<script>
+	function search() {
+		if ($("#option1").hasClass("active")){
+			location.href='/message/list/?status=0&desc='+$("#message_search_id").val();
+		}
+		else if($("#option2").hasClass("active")){
+			location.href='/message/list/?status=1&desc='+$("#message_search_id").val();
+		}
+		else{
+			location.href='/message/list/?desc='+$("#message_search_id").val();
+		}
+	}
+	function change(st){
+		location.href='/message/list/?status='+parseInt(st);
+		$("#option"+parseInt(st)).addClass('active');
+	}
+	function addmessage(){
+		$.post('/message/add/', {
+			title: $("#title_id").val(),
+			content: $("#content_id").val(),
+			group_id: $("#group_id").val(),
+			user_id: $("#user_id").val()
+		}, function(data) {
+			if (data.code == 0){
+				alert(data.msg);
+				location.href='/message/list/';
+			}
+		}, "json");
+	}
+</script>
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<h5>Custom responsive table </h5>
+					<div class="ibox-tools">
+						<a class="collapse-link">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<i class="fa fa-wrench"></i>
+						</a>
+						<ul class="dropdown-menu dropdown-user">
+							<li><a href="#">Config option 1</a>
+							</li>
+							<li><a href="#">Config option 2</a>
+							</li>
+						</ul>
+						<a class="close-link">
+							<i class="fa fa-times"></i>
+						</a>
+					</div>
+				</div>
+				<div class="ibox-content">
+					<div class="row">
+						<div class="col-sm-4 m-b-xs">
+							<div data-toggle="buttons" class="btn-group">
+								<label class="btn btn-sm btn-white" id="option1" onclick="change(0)";> 
+									<input type="radio" id="__option1" name="options">
+									未读 </label>
+								<label class="btn btn-sm btn-white" id="option2" onclick="change(1);"> 
+									<input type="radio" id="__option2" name="options">
+								已读</label>
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<div class="input-group"><input id="message_search_id" type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
+								<button type="button" class="btn btn-sm btn-primary" onclick="search();"> Go!</button> </span></div>
+						</div>
+					</div>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+							<tr>
+								<th>消息 </th>
+								<th>来源</th>
+								<th>发布时间</th>
+								<th>状态</th>
+							</tr>
+							</thead>
+							<tbody>
+								{% for m in messages %}
+									<tr>
+										<td>{{ m.title }}</td>
+										<td>{{ m.author }}</td>
+										<td>{{ m.create_time }}</td>
+										<td><a href="/message/{{ m.id }}/">{{ m.status }}</a></td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% if user.priv == 'teacher' %}
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<h5>发布新通知<small>请填写通知内容</small></h5>
+					<div class="ibox-tools">
+						<a class="collapse-link">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<i class="fa fa-wrench"></i>
+						</a>
+						<ul class="dropdown-menu dropdown-user">
+							<li><a href="#">Config option 1</a>
+							</li>
+							<li><a href="#">Config option 2</a>
+							</li>
+						</ul>
+						<a class="close-link">
+							<i class="fa fa-times"></i>
+						</a>
+					</div>
+				</div>
+				<div class="ibox-content">
+					<form method="get" class="form-horizontal">
+						<div class="form-group"><label class="col-sm-2 control-label">通知标题</label>
+
+							<div class="col-sm-10"><input type="text" class="form-control" id="title_id"></div>
+						</div>
+						<div class="hr-line-dashed"></div>
+						<div class="form-group"><label class="col-sm-2 control-label">通知班级的班号</label>
+							<div class="col-sm-10"><input type="text" class="form-control" id="group_id"> 
+							</div>
+						</div>
+						<div class="hr-line-dashed"></div>
+						<div class="form-group"><label class="col-sm-2 control-label">通知学生的学号</label>
+							<div class="col-sm-10"><input type="text" class="form-control" id="user_id">
+								<span class="help-block m-b-none">单独通知某个学生时必填</span>
+							</div>
+						</div>
+						<div class="hr-line-dashed"></div>
+						<div class="form-group"><label class="col-sm-2 control-label">通知内容</label>
+							<div class="col-sm-10"><textarea id="content_id" rows="10" cols="100" class="form-control">
+								</textarea>
+							</div>
+						</div>
+						<div class="hr-line-dashed"></div>
+
+						<div class="form-group">
+							<div class="col-sm-4 col-sm-offset-2">
+								<button class="btn btn-primary" onclick="addmessage();">发布</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+</div>
+
+{% endblock %}

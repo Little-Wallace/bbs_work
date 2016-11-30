@@ -1,11 +1,10 @@
 # encoding: utf-8
 from sqlalchemy.orm import mapper, sessionmaker
-from sqlalchemy import Column, String, create_engine, DateTime, Integer
+from sqlalchemy import Column, String, create_engine, DateTime, Integer, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql import TEXT
 from sqlalchemy.sql import func
 from datetime import datetime
-from sqlalchemy.sql import func
 
 __author__ = 'xixihaha'
 
@@ -16,11 +15,11 @@ session = DBsession()
 
 class User(Base):
 
-    STUDENT = 0
-    PARENT = 1
-    TEACHER = 2
-    ADMIN = 3
-    ROOT = 4
+    STUDENT = 'stu'
+    PARENT = 'par'
+    TEACHER = 'teacher'
+    ADMIN = 'admin'
+    ROOT = 'root'
 
     __tablename__ = 'user'
 
@@ -28,21 +27,17 @@ class User(Base):
     name = Column(String(20))
     password = Column(String(32))
     phone = Column(String(20))
-    identity = Column(Integer(), default=STUDENT)
+    priv = Column(String(16), default=STUDENT)
     sex = Column(String(20))
     major = Column(String(30))
-    target_major = Column(String(30))
     university = Column(String(32))
     status = Column(String(20))
     school = Column(String(20))
     qq = Column(String(20))
-    email = Column(String(20))
-    sign_time = Column(DateTime(timezone=True), default=func.now())
+    email = Column(String(64))
     extra = Column(String(256))
     id_card = Column(String(32))
-    test_number = Column(String(32))
     group_id=Column(Integer())
-    register_level = Column(String(32))
     address = Column(String(32))
 
 
@@ -50,12 +45,16 @@ class User(Base):
 
  
     @classmethod
-    def check(cls, name, passwd):
-        return session.query(cls).filter(cls.id==name, cls.password==passwd).first()
+    def check(cls, mail, passwd):
+        return session.query(cls).filter(cls.email==mail, cls.password==passwd).first()
 
     @classmethod
     def getById(cls, id):
         return session.query(cls).filter(cls.id==id).first()
+
+    @classmethod
+    def getByGroupId(cls, id):
+        return session.query(cls).filter(cls.group_id==id).all()
 
     @classmethod
     def getAll(cls):
@@ -83,13 +82,35 @@ class Message(Base):
     __tablename__ = 'message'
 
     id = Column(Integer(), primary_key=True)
-    desc = Column(String(256))
+    desc = Column(TEXT)
     title = Column(String(256))
     style = Column(String(32))
-    status = Column(String(20))
-    author = Column(String(20))
+    status = Column(Integer())
+    author_id = Column(String(20))
     user_id = Column(Integer())
-    create_time = Column(DateTime(), default=datetime.now())
+    group_id = Column(Integer())
+    create_time = Column(DateTime(), default=func.now())
+
+    @classmethod
+    def getById(cls, id):
+        return session.query(cls).filter(cls.id==id).first()
+
+    @classmethod
+    def getByGroupId(cls, group_id, user_id):
+        return session.query(cls).filter(or_(cls.group_id==group_id, cls.author_id==user_id,
+            cls.user_id==user_id))
+
+class Grade(Base):
+
+    __tablename__ = 'grade'
+
+    id = Column(Integer(), primary_key=True)
+    semester = Column(String(28))
+    contest_time = Column(DateTime(), default=func.now())
+    teacher_id = Column(Integer())
+    student_id = Column(Integer())
+    score = Column(Integer())
+    subject = Column(String(32))
 
     @classmethod
     def getById(cls, id):
@@ -97,7 +118,21 @@ class Message(Base):
 
     @classmethod
     def getByUserId(cls, id):
-        return session.query(cls).filter(cls.user_id==id).first()
+        return session.query(cls).filter(cls.student_id==id).all()
+
+class Task(Base):
+
+    __tablename__ = 'task'
+
+    id = Column(Integer(), primary_key=True)
+    create_time = Column(DateTime(), default=func.now())
+    teacher_id = Column(Integer())
+    student_id = Column(Integer())
+    status = Column(Integer())
+    subject = Column(String(32))
+    desc = Column(TEXT)
+
+
 
 class Topic(Base):
 
@@ -108,7 +143,7 @@ class Topic(Base):
     author = Column(String(28))
     style = Column(Integer())
     title = Column(String(36))
-    create_time = Column(DateTime(), default=datetime.now())
+    create_time = Column(DateTime(), default=func.now())
 
 
 class Article(Base):
@@ -121,7 +156,7 @@ class Article(Base):
     author = Column(String(28))
     style = Column(Integer())
     dest = Column(Integer())
-    create_time = Column(DateTime(), default=datetime.now())
+    create_time = Column(DateTime(), default=func.now())
 
 class Comment(Base):
 
@@ -139,14 +174,14 @@ class Comment(Base):
 if __name__ == '__main__':
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    a = User(id=0, name = "ChenSijia", password = "11")
-    b = User(id=0, name = "Liuwei", password = "11")
-    c = User(id=0, name = "Baihao", password = "11")
-    d = User(id=0, name = "Wujingsheng", password = "11")
+    a = User(id=0, name = "ChenSijia", password = "11", email='xixihaha@gmail.com')
+    b = User(id=0, name = "Liuwei", password = "11", email='xixihaha@gmail.com')
+    c = User(id=0, name = "Baihao", password = "11", email='hhhh@gmail.com')
+    d = User(id=0, name = "Wujingsheng", password = "11", email='xxxx@gmail.com')
     l = Message(id=123)
     l.desc = 'XIXI' 
     l.title = 'XIXI'
-    l.status = 'XIXI'
+    l.status = 0
     ca = ChatInfo(id=0, sender = 1, to = 2, content = 'aa')
     cb = ChatInfo(id=0, sender = 2, to = 1, content = 'bb')
     cc = ChatInfo(id=0, sender = 1, to = 2, content = 'cc')

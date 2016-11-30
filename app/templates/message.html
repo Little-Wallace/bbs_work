@@ -1,0 +1,32 @@
+{% extends 'base_csj.html' %}
+{% block page_title %}
+通知详情
+{% endblock %}
+{% block page_kind %}
+<li>
+	<a href="/">Home</a>
+</li>
+<li>
+	<a href="/message/list/">通知发布</a>
+</li>
+<li class="active">
+	<strong>详情</strong>
+</li>
+{% endblock %}
+{% block page_content %}
+        <div class="wrapper wrapper-content  animated fadeInRight article">
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1">
+                    <div class="ibox">
+                        <div class="ibox-content">
+                            <div class="text-center article-title">
+                            <span class="text-muted"><i class="fa fa-clock-o"></i>{{ m.create_time }}</span>
+                                <h1> {{m.title}} </h1>
+                            </div>
+						<p>{{ m.desc }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

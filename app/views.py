@@ -1,13 +1,21 @@
+#encoding: utf-8
 from functools import wraps
 import json
 from flask import g, session, request, make_response, Response, url_for
 from flask.blueprints import Blueprint
 from flask import render_template, redirect
+from flask.ext.wtf import Form
 from app import bbs_app
 from models import User, Topic, Message
 from models import session as sess
+from wtforms import StringField, TextAreaField, SubmitField, HiddenField, PasswordField
+from wtforms.validators import Required
 
 # views_app = Blueprint('views_app', __name__)
+
+class InputInfo(Form):
+    content = TextAreaField('', validators=[Required()])
+    submit = SubmitField('Send Enter')
 
 def login_required(func):
     @wraps(func)
@@ -30,30 +38,6 @@ def load_user():
            # print user
             g.user = user
 
-@bbs_app.route('/logincc/', methods=['POST'])
-def login_post():
-    #print "here"
-    #print request.method
-    if request.method == 'POST':
-       # print request.form
-        user = User.check(request.form.get('username', None), request.form.get('password', None))
-        resp = Response()
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        #print session
-        if user:
-           # print "True"
-            session['logged_in'] = True
-            session['user_id'] = user.id
-            resp.data = json.dumps({'code':0})
-            g.user = user
-           # print g.user.id
-           # print resp
-            return resp
-        else:
-            resp.data = json.dumps({'code': -1, 'reason': 'password or username wrong'})
-        return resp
-    return redirect('/')
-
 @bbs_app.route('/haha', methods=['GET'])
 def index_liuwei():
    # print url_for('static', filename='js/Data.js')
@@ -68,11 +52,31 @@ def index_liuwei():
 @bbs_app.route('/message/list/', methods=['GET'])
 @login_required
 def message_list():
-    messages = Message.getByUserId(g.user.id)
+    q = Message.getByGroupId(g.user.group_id, g.user.id)
+    if 'status' in request.args:
+        q = q.filter(Message.status==request.args.get('status'))
+    if 'desc' in request.args:
+        q = q.filter(Message.title.like("%" + request.args.get('desc') + "%"))
+    messages = q.order_by(Message.create_time.desc()).all()
     if messages and len(messages) > 0:
-        return render_template('message.html', user=g.user, messages=messages);
+        resp = []
+        for m in messages:
+            res = {}
+            res['id'] = m.id
+            res['title'] = m.title
+            res['author'] = u'无'
+            res['create_time'] = str(m.create_time)
+            if m.status == 1:
+                res['status'] = u'已读'
+            else:
+                res['status'] = u'未读'
+            u = User.getById(m.author_id)
+            if u:
+                res['author'] = u.name
+            resp.append(res)
+        return render_template('message_list.html', user=g.user, messages=resp);
     else:
-        return render_template('message.html', user=g.user)
+        return render_template('message_list.html', user=g.user)
 
 @bbs_app.route('/message/<int:m_id>/', methods=['GET'])
 @login_required
@@ -80,28 +84,41 @@ def message_info(m_id):
     m = Message.getById(m_id)
     if not m:
         return render_template('error.html', user=g.user, error='haha')
-    if m.user_id != g.user.id:
+    if m.user_id != g.user.id and m.group_id != g.user.group_id and m.author_id != g.user.id:
         return render_template('error.html', user=g.user, error='xixi')
-    m.status = u'haha'
-    return render_template('message_content.html', user=g.user, message=m)
+    m.status = 1
+    sess.commit()
+    return render_template('message.html', user=g.user, m=m)
 
 @bbs_app.route('/message/add/', methods=['POST'])
 @login_required
 def addmessage():
-    if g.user.identity != User.TEACHER:
+    if g.user.priv != User.TEACHER:
         return render_template('error.html', user=g.user, error=u'haha')
     m = Message()
     m.title = request.form.get('title', None)
-    m.desc = request.form.get('desc', None)
+    m.desc = request.form.get('content', None)
     m.user_id = request.form.get('user_id', None)
-    m.author = g.user.name
-    m.status = u'haha'
-    resp = Response()
+    group_id = request.form.get('group_id', None)
+    m.author_id = g.user.id
+    m.status = 0
+    resp = make_response()
     resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST'
+    resp.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
+    group = User.getByGroupId(group_id)
     try:
+        for u in group:
+            mm = Message()
+            mm.title = m.title
+            mm.desc = m.desc
+            mm.user_id = u.id
+            mm.status = 0
+            mm.author_id = g.user.id
+            sess.add(mm)
         sess.add(m)
         sess.commit()
-        resp.data = json.dumps({'code':0})
+        resp.data = json.dumps({'code':0, 'msg': u'发布成功'})
     except Exception, ex:
         resp.data = json.dumps({'code': -1, 'reason': ex})
     return resp
@@ -115,6 +132,11 @@ def homework_list():
     else:
         return render_template('homework.html', user=g.user)
 
+@bbs_app.route('/grade/', methods=['GET'])
+@login_required
+def grade_list():
+    grades = Grade.getByUserId(g.user.id)
+    return render_template('grade.html', user=g.user, grades=grades)
 
 
 
