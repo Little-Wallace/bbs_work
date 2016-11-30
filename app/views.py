@@ -13,10 +13,6 @@ from wtforms.validators import Required
 
 # views_app = Blueprint('views_app', __name__)
 
-class InputInfo(Form):
-    content = TextAreaField('', validators=[Required()])
-    submit = SubmitField('Send Enter')
-
 def login_required(func):
     @wraps(func)
     def _decorator(*args, **kwargs):
@@ -53,8 +49,10 @@ def index_liuwei():
 @login_required
 def message_list():
     q = Message.getByGroupId(g.user.group_id, g.user.id)
+    status = -1
     if 'status' in request.args:
         q = q.filter(Message.status==request.args.get('status'))
+        status = int(request.args.get('status'))
     if 'desc' in request.args:
         q = q.filter(Message.title.like("%" + request.args.get('desc') + "%"))
     messages = q.order_by(Message.create_time.desc()).all()
@@ -74,7 +72,7 @@ def message_list():
             if u:
                 res['author'] = u.name
             resp.append(res)
-        return render_template('message_list.html', user=g.user, messages=resp);
+        return render_template('message_list.html', user=g.user, messages=resp, status=status);
     else:
         return render_template('message_list.html', user=g.user)
 
