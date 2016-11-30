@@ -118,7 +118,11 @@ class Grade(Base):
 
     @classmethod
     def getByUserId(cls, id):
-        return session.query(cls).filter(cls.student_id==id).all()
+        return session.query(cls).filter(cls.student_id==id)
+
+    @classmethod
+    def getByTeacherId(cls, id):
+        return session.query(cls).filter(cls.teacher_id==id)
 
 class Task(Base):
 

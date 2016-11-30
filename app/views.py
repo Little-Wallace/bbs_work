@@ -135,8 +135,62 @@ def homework_list():
 @bbs_app.route('/grade/', methods=['GET'])
 @login_required
 def grade_list():
-    grades = Grade.getByUserId(g.user.id)
+    if g.user.priv == 'TEACHER':
+        q = Grade.getByTeacherId(g.user.id)
+    else: 
+        q = Grade.getByUserId(g.user.id)
+    subj = request.args.get('subject', None)
+    if subj:
+        grades = q.filter(Grade.subject.like("%" + subj + "%")).all()
+    else:
+        grades = q.all()
     return render_template('grade.html', user=g.user, grades=grades)
 
+@bbs_app.route('/grade/data/', methods=['POST'])
+@login_required
+def get_grade_data(g_id, subject):
+    g_id = request.form.get('student_id')
+    subject = request.form.get('subject')
+    grades = Grade.getByUserId(g_id).filter(Grade.subject==subject).\
+            order_by(Grade.contest_time.desc()).all()
+    resp = make_response()
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST'
+    resp.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
+    data = {}
+    data_name = []
+    data_value = []
+    for x in grades:
+        data_value.append(x.score)
+        data_name.append(x.contest_time)
+    data['value'] = data_value
+    data['name'] = data_name
+    data['title'] = User.getById(g_id).name + u"的" + subject + u"成绩曲线"
+    resp.data = data
+    return resp
+
+@bbs_app.route('/grade/add/', methods=['POST'])
+@login_required
+def addgrade():
+    if g.user.priv != User.TEACHER:
+        return render_template('error.html', user=g.user, error=u'haha')
+    m = Grade()
+    m.title = request.form.get('subject', None)
+    m.contest_time = request.form.get('contest_time', None)
+    m.user_id = request.form.get('user_id', None)
+    m.teacher_id = g.user.id
+    m.semester = request.form.get('semester', None)
+    m.score = request.form.get('score', None)
+    resp = make_response()
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST'
+    resp.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
+    try:
+        sess.add(m)
+        sess.commit()
+        resp.data = json.dumps({'code':0, 'msg': u'发布成功'})
+    except Exception, ex:
+        resp.data = json.dumps({'code': -1, 'reason': ex})
+    return resp
 
 

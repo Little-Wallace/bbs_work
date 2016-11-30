@@ -3,36 +3,7 @@
 通知发布
 {% endblock %}
 {% block page_content %}
-<script>
-	function search() {
-		if ($("#option1").hasClass("active")){
-			location.href='/message/list/?status=0&desc='+$("#message_search_id").val();
-		}
-		else if($("#option2").hasClass("active")){
-			location.href='/message/list/?status=1&desc='+$("#message_search_id").val();
-		}
-		else{
-			location.href='/message/list/?desc='+$("#message_search_id").val();
-		}
-	}
-	function change(st){
-		location.href='/message/list/?status='+parseInt(st);
-		$("#option"+parseInt(st)).addClass('active');
-	}
-	function addmessage(){
-		$.post('/message/add/', {
-			title: $("#title_id").val(),
-			content: $("#content_id").val(),
-			group_id: $("#group_id").val(),
-			user_id: $("#user_id").val()
-		}, function(data) {
-			if (data.code == 0){
-				alert(data.msg);
-				location.href='/message/list/';
-			}
-		}, "json");
-	}
-</script>
+
 <div class="wrapper wrapper-content animated fadeInRight">
 	<div class="row">
 		<div class="col-lg-12">
@@ -59,38 +30,31 @@
 				</div>
 				<div class="ibox-content">
 					<div class="row">
-						<div class="col-sm-4 m-b-xs">
-							<div data-toggle="buttons" class="btn-group">
-								<label class="btn btn-sm btn-white" id="option1" onclick="change(0)";> 
-									<input type="radio" id="__option1" name="options">
-									未读 </label>
-								<label class="btn btn-sm btn-white" id="option2" onclick="change(1);"> 
-									<input type="radio" id="__option2" name="options">
-								已读</label>
-							</div>
-						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-6">
 							<div class="input-group"><input id="message_search_id" type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
-								<button type="button" class="btn btn-sm btn-primary" onclick="search();"> Go!</button> </span></div>
+								<button type="button" class="btn btn-sm btn-primary" onclick="search();"> 搜索科目</button> </span></div>
 						</div>
 					</div>
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
 							<tr>
-								<th>消息 </th>
-								<th>来源</th>
-								<th>发布时间</th>
-								<th>状态</th>
+								<th>科目</th>
+								<th>学期</th>
+								<th>老师</th>
+								<th>考试时间</th>
+								<th>分数</th>
 							</tr>
 							</thead>
 							<tbody>
-								{% for m in messages %}
+								{% for g in grades %}
 									<tr>
-										<td>{{ m.title }}</td>
-										<td>{{ m.author }}</td>
-										<td>{{ m.create_time }}</td>
-										<td><a href="/message/{{ m.id }}/">{{ m.status }}</a></td>
+										<td>{{ g.subject }}</td>
+										<td>{{ g.semester }}</td>
+										<td>{{ g.teacher }}</td>
+										<td>{{ g.contest_time }} </td>
+										<td>{{ g.score }} </td>
+			<td><button type="button" class="btn btn-default" onclick="query({{g.subject}}, {{g.student_id}});">查看成绩变化曲线</a></td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -100,12 +64,21 @@
 			</div>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="ibox float-e-margins">
+				<div class="ibox-content">
+					<div id="grade_line" style="width:600px;height:600px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
 	{% if user.priv == 'teacher' %}
 	<div class="row">
 		<div class="col-lg-12">
 			<div class="ibox float-e-margins">
 				<div class="ibox-title">
-					<h5>发布新通知<small>请填写通知内容</small></h5>
+					<h5>添加成绩<small>请填写成绩内容</small></h5>
 					<div class="ibox-tools">
 						<a class="collapse-link">
 							<i class="fa fa-chevron-up"></i>
@@ -126,24 +99,23 @@
 				</div>
 				<div class="ibox-content">
 					<form method="get" class="form-horizontal">
-						<div class="form-group"><label class="col-sm-2 control-label">通知标题</label>
+						<div class="form-group"><label class="col-sm-2 control-label">科目</label>
 
-							<div class="col-sm-10"><input type="text" class="form-control" id="title_id"></div>
+							<div class="col-sm-10"><input type="text" class="form-control" id="subject_id"></div>
 						</div>
 						<div class="hr-line-dashed"></div>
-						<div class="form-group"><label class="col-sm-2 control-label">通知班级的班号</label>
-							<div class="col-sm-10"><input type="text" class="form-control" id="group_id"> 
+						<div class="form-group"><label class="col-sm-2 control-label">学期</label>
+							<div class="col-sm-10"><input type="text" class="form-control" id="semester_id"> 
 							</div>
 						</div>
 						<div class="hr-line-dashed"></div>
-						<div class="form-group"><label class="col-sm-2 control-label">通知学生的学号</label>
+						<div class="form-group"><label class="col-sm-2 control-label">学生学号</label>
 							<div class="col-sm-10"><input type="text" class="form-control" id="user_id">
-								<span class="help-block m-b-none">单独通知某个学生时必填</span>
 							</div>
 						</div>
 						<div class="hr-line-dashed"></div>
-						<div class="form-group"><label class="col-sm-2 control-label">通知内容</label>
-							<div class="col-sm-10"><textarea id="content_id" rows="10" cols="100" class="form-control">
+						<div class="form-group"><label class="col-sm-2 control-label">时间</label>
+							<div class="col-sm-10"><textarea id="time_id" rows="10" cols="100" class="form-control">
 								</textarea>
 							</div>
 						</div>
@@ -151,7 +123,7 @@
 
 						<div class="form-group">
 							<div class="col-sm-4 col-sm-offset-2">
-								<button class="btn btn-primary" onclick="addmessage();">发布</button>
+								<button class="btn btn-primary" onclick="addgrade();">发布</button>
 							</div>
 						</div>
 					</form>
@@ -161,5 +133,88 @@
 	</div>
 	{% endif %}
 </div>
-
+<script>
+	function search() {
+		location.href='/grade/list/?subject='+$("#grade_search_id").val();
+	}
+	function addgrade(){
+		$.post('/grade/add/', {
+			subject: $("#subject_id").val(),
+			semester: $("#semester_id").val(),
+			contest_time: $("#time_id").val(),
+			student_id: $("#user_id").val()
+		}, function(data) {
+			if (data.code == 0){
+				alert(data.msg);
+				location.href='/grade/list/';
+			}
+		}, "json");
+	}
+	var x_data = [];
+	var y_data = [];
+	var myChart1 = echarts.init(document.getElementById("grade_line"));
+	var option = {
+		title: {
+			text: '成绩变化曲线图'
+		},
+		tooltip: {
+			trigger: 'axis',
+			formatter: function (params) {
+				params = params[0];
+				return params.name + '：' + params.value;
+			},
+			axisPointer: {
+				animation: false
+			}
+		},
+		legend: {
+			data: ['', '']
+		 },
+		xAxis: {
+			type: 'category',
+			splitLine: {
+				show: false
+			},
+			data: x_data
+		},
+		yAxis: {
+			type: 'value',
+			boundaryGap: [0, '100%'],
+			splitLine: {
+				show: false
+			}
+		},
+		series: [
+		{
+			name: '课程成绩',
+			type: 'line',
+			showSymbol: false,
+			hoverAnimation: false,
+			data : y_data,
+		},
+		{
+			name: '数据',
+			type: 'line',
+			showSymbol: false,
+			hoverAnimation: false,
+			data : y_data,
+		}
+		]
+	};
+	function query(subject_, user_id) {
+		$.post("/grade/data/", {
+			subject: subject_,
+			student_id: user_id,
+			}, function(data) {
+				if (data.code == 0) {
+					option.xAxis.data = data.time;
+					option.series[0].data = data.value;
+					option.series[0].name = '课程成绩';
+					option.legend.data[1] = '蛤蛤';
+					option.title.text = data.title;
+					myChart1.setOption(option);
+				}
+		}, "json");
+	}
+</script>
 {% endblock %}
