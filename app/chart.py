@@ -4,7 +4,7 @@ from flask import g, session, request, make_response, Response, url_for, flash
 from flask.blueprints import Blueprint
 from flask import render_template, redirect
 from app import bbs_app
-from models import User, Topic, Message, ChatInfo
+from models import User, Topic, Message, ChatInfo, Topic, NameList
 from models import session as sess
 from views import login_required
 from flask.ext.wtf import Form
@@ -84,3 +84,13 @@ def page_not_found(e):
 def internal_server_error(e):
 	return render_template('500.html'), 500
 
+@bbs_app.route('/bbslist/', methods=['GET'])
+@login_required
+def bbs_list():
+	topic = Topic.getAll()
+	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList = NameList, User = User)
+	
+@bbs_app.route('/topic/', methods=['GET', 'POST'])
+@login_required
+def topic():
+	return render_template('topic_content.html', user = g.user)
