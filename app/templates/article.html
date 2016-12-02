@@ -1,0 +1,70 @@
+{% extends 'base_csj.html' %}
+{% block page_title %}
+文章详情
+{% endblock %}
+{% block page_kind %}
+<li>
+	<a href="/">Home</a>
+</li>
+<li>
+	<a href="/article/list/">列表</a>
+</li>
+<li class="active">
+	<strong>详情</strong>
+</li>
+{% endblock %}
+{% block page_content %}
+	<div class="wrapper wrapper-content  animated fadeInRight article">
+		<div class="row">
+			<div class="col-lg-10 col-lg-offset-1">
+				<div class="ibox">
+					<div class="ibox-content">
+						<button class="btn btn-white btn-xs" type="button">{{ article.author }}</button>
+						<div class="text-center article-title">
+						<span class="text-muted"><i class="fa fa-clock-o"></i>{{ article.create_time }}</span>
+							<h1> {{article.title}} </h1>
+						</div>
+					{% for c in article.content %}
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ c }}</p>
+					{% endfor %}
+					<hr>
+					<div class="row">
+						<div class="col-md-6">
+							<h5>标签: </h5>
+							{% for x in article.tags %}
+							<button class="btn btn-primary btn-xs" type="button">{{ x }}</button>
+							{% endfor %}
+						</div>
+						<div class="col-md-6">
+							<div class="small text-right">
+								<h5>统计</h5>
+								<div><i class="fa fa-comments-o"></i>{{ article.comments }} 条评论</div> 
+								<i class="fa fa-eye"></i>{{ article.views }}次阅读
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<h2>评论：</h2>
+						{% for c in comments %}
+							<div class="social-feed-box">
+								<div class="social-avatar">
+									<a href class="pull-left">
+										<img alt="image" src="{{ url_for('static', filename=c.picture_dir) }}">
+									</a>
+									<div class="media-body">
+										<a href="#">
+											{{ c.author }}
+										</a>
+										<small class="text-muted">{{ c.create_time }}</small>
+									</div>
+								</div>
+								<div class="social-body">
+									<p>{{ c.content }}</p>
+								</div>
+							</div>
+						{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

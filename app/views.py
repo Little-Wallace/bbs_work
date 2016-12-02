@@ -6,7 +6,7 @@ from flask.blueprints import Blueprint
 from flask import render_template, redirect
 from flask.ext.wtf import Form
 from app import bbs_app
-from models import User, Message, Grade, or_, Task
+from models import User, Message, Grade, or_, Task, Article, ArticleToUser, Comment
 from models import session as sess
 from wtforms import StringField, TextAreaField, SubmitField, HiddenField, PasswordField
 from wtforms.validators import Required
@@ -291,3 +291,96 @@ def dohomework(t_id):
         resp.data = json.dumps({'code': -1, 'reason': ex})
     return resp
 
+@bbs_app.route('/article/list/', methods=['GET'])
+@login_required
+def airticle_list():
+    art = ArticleToUser.getByUserId(g.user.id)
+    articles = []
+    for a_u in art:
+        a = Article.getById(a_u.article_id)
+        res = {
+            'id' : a.id,
+            'title' : a.title,
+            'intro': a.intro,
+            'create_time': a.create_time,
+            'tags': [],
+            'comments': Comment.countByArticleId(a.id),
+            'views': 0,
+            'author': u'佚名',
+        }
+        u = User.getById(a.author_id)
+        if u:
+            res['author'] = u.name
+        if a.tags:
+            print type(a.tags)
+            tags = json.loads(unicode(a.tags))
+            res['tags'] = tags
+        if a.views: 
+            try:
+                vie = json.loads(a.views)
+                res['views'] = len(vie)
+            except Exception, ex:
+                print ex
+        articles.append(res)
+    return render_template('article_list.html', user=g.user, articles=articles);
+
+
+
+@bbs_app.route('/article/<int:p_id>/', methods=['GET'])
+@login_required
+def airticle(p_id):
+    a = Article.getById(p_id)
+    if not a:
+        return render_template('error.html', user=g.user, error='haha')
+    print a.content
+    cc = a.content.split('\n')
+    res = {
+        'id' : a.id,
+        'title' : a.title,
+        'create_time': str(a.create_time),
+        'tags': [],
+        'comments': Comment.countByArticleId(a.id),
+        'content': cc,
+        'views': 0,
+        'author': u'佚名',
+    }
+    u = User.getById(a.author_id)
+    if u:
+        res['author'] = u.name
+    if a.tags:
+        print type(a.tags)
+        tags = json.loads(unicode(a.tags))
+        res['tags'] = tags
+    if a.views: 
+        try:
+            vie = json.loads(a.views)
+            if g.user.id not in vie:
+                vie.append(g.user.id)
+            a.views = json.dumps(vie)
+            res['views'] = len(vie)
+        except Exception, ex:
+            print ex
+    else:
+        vie = []
+        vie.append(g.user.id)
+        a.views = json.dumps(vie)
+    cc = Comment.getByArticleId(a.id)
+    resp = []
+    for c in cc:
+        ret = {
+                'create_time': str(c.create_time),
+                'id': c.id,
+                'content': c.content,
+                'author': u'佚名',
+                'picture_dir': 'img/a1.jpg',
+                }
+        u = User.getById(c.user_id)
+        if u:
+            ret['author'] = u.name
+        resp.append(ret)
+    return render_template('article.html', user=g.user, article=res, comments=resp)
+
+@bbs_app.route('/article/push/', methods=['GET'])
+@login_required
+def article_push():
+    pass

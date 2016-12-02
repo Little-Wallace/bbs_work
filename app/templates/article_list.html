@@ -1,0 +1,58 @@
+{% extends 'base_csj.html' %}
+{% block page_title %}
+文章列表
+{% endblock %}
+{% block page_kind %}
+<li>
+	<a href="/">Home</a>
+</li>
+<li>
+	<a href="#">文章推送</a>
+</li>
+<li>
+	<a href="/article/list/">文章列表</a>
+</li>
+{% endblock %}
+{% block page_content %}
+
+<div class="wrapper wrapper-content animated fadeInRight blog">
+	<div class="row">
+		<div class="col-lg-4">
+		{% for a in articles %}
+			{% if loop.index == 5 or loop.index == 9 %} 
+			</div>
+			<div class="col-lg-4">
+			{% endif %}
+			<div class="ibox">
+				<div class="ibox-content">
+					<a href="/article/{{ a.id }}/" class="btn-link">
+						<h2>{{ a.title }}</h2>
+					</a>
+					<div class="small m-b-xs">
+						<strong>{{ a.author }}</strong>
+						<span class="text-muted"><i class="fa fa-clock-o"></i>{{ a.create_time }}</span>
+					</div>
+					<p>{{ a.intro }}</p>
+					<div class="row">
+						<div class="col-md-6">
+							<h5>标签: </h5>
+							{% for x in a.tags %}
+							<button class="btn btn-primary btn-xs" type="button">{{ x }}</button>
+							{% endfor %}
+						</div>
+						<div class="col-md-6">
+							<div class="small text-right">
+								<h5>统计</h5>
+								<div><i class="fa fa-comments-o"></i>{{ a.comments }} 条评论</div> 
+								<i class="fa fa-eye"></i>{{ a.views }}次阅读
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}

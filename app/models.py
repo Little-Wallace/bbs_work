@@ -199,23 +199,46 @@ class Article(Base):
     id = Column(Integer(), primary_key=True)
     title = Column(String(36))
     content = Column(TEXT)
-    author = Column(String(28))
-    style = Column(Integer())
-    dest = Column(Integer())
+    author_id = Column(String(28))
+    intro = Column(TEXT)
+    tags = Column(String(256))
     create_time = Column(DateTime(), default=func.now())
-    picture_dir = Column(String())
+    views = Column(TEXT)
+
+    @classmethod
+    def getById(cls, id):
+        return session.query(cls).filter(cls.id==id).first()
+
+class ArticleToUser(Base):
+
+    __tablename__ = 'article_to_user'
+
+    id = Column(Integer(), primary_key=True)
+    article_id = Column(Integer())
+    user_id = Column(Integer())
+
+    @classmethod
+    def getByUserId(cls, id):
+        return session.query(cls).filter(cls.user_id==id).all()
 
 class Comment(Base):
 
     __tablename__ = 'comment'
 
     id = Column(Integer(), primary_key=True)
-    desc = Column(TEXT)
-    author = Column(String(28))
-    dest = Column(Integer())
-    topic_id = Column(Integer())
+    content = Column(TEXT)
+    user_id = Column(String(28))
+    article_id = Column(Integer())
 
     create_time = Column(DateTime(), default=datetime.now())
+
+    @classmethod
+    def countByArticleId(cls, article_id):
+        return session.query(func.count(cls.id)).filter(cls.article_id==article_id).scalar()
+
+    @classmethod
+    def getByArticleId(cls, article_id):
+        return session.query(cls).filter(cls.article_id==article_id).all()
 
 
 if __name__ == '__main__':

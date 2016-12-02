@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Base Page</title>
+    <title>家校沟通系统</title>
 
 	<link href="{{ url_for('static', filename='css/cssBycsj/css/bootstrap.min.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='css/cssBycsj/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
@@ -44,7 +44,19 @@
                     <a href="/grade/"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">成绩追踪</span></a>
                 </li>
                 <li>
-                    <a href="/article/list/"><i class="fa fa-diamond"></i> <span class="nav-label">文章推送</span></a>
+                    <a href="#"><i class="fa fa-diamond"></i> <span class="nav-label">文章推送</span>
+						<span class="fa arrow"></span>
+					</a>
+					<ul class="nav nav-second-level collapse" style="height: 0px">
+						<li>
+							<a href="/article/list/">文章列表</a>
+						</li>
+						{% if user.priv == 'teacher' or user.priv == 'admin'%}
+						<li>
+							<a href="/article/push/">发表新文章</a>
+						</li>
+						{% endif %}
+					</ul>
                 </li>
                 <li>
                     <a href="/message/list/"><i class="fa fa-flask"></i> <span class="nav-label">通知发布</span></a>
