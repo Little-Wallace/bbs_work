@@ -1,6 +1,6 @@
 {% extends 'base_csj.html' %}
-{% block page_kind %}
-通知发布
+{% block page_title %}
+成绩查询
 {% endblock %}
 {% block page_content %}
 
@@ -31,14 +31,16 @@
 				<div class="ibox-content">
 					<div class="row">
 						<div class="col-sm-6">
-							<div class="input-group"><input id="message_search_id" type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
-								<button type="button" class="btn btn-sm btn-primary" onclick="search();"> 搜索科目</button> </span></div>
+							<div class="input-group"><input id="message_search_id" type="text" placeholder="输入科目或姓名" class="input-sm form-control"> <span class="input-group-btn">
+								<button type="button" class="btn btn-sm btn-primary" onclick="search();"> 搜索</button> </span></div>
 						</div>
 					</div>
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
 							<tr>
+								<th>学号</th>
+								<th>姓名</th>
 								<th>科目</th>
 								<th>学期</th>
 								<th>老师</th>
@@ -49,12 +51,14 @@
 							<tbody>
 								{% for g in grades %}
 									<tr>
+										<td>{{ g.id }}</td>
+										<td>{{ g.name }}</td>
 										<td>{{ g.subject }}</td>
 										<td>{{ g.semester }}</td>
 										<td>{{ g.teacher }}</td>
 										<td>{{ g.contest_time }} </td>
 										<td>{{ g.score }} </td>
-			<td><button type="button" class="btn btn-default" onclick="query({{g.subject}}, {{g.student_id}});">查看成绩变化曲线</a></td>
+			<td><button type="button" class="btn btn-default" onclick="query('{{g.subject}}', '{{g.id}}');">查看成绩变化曲线</a></td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -115,8 +119,8 @@
 						</div>
 						<div class="hr-line-dashed"></div>
 						<div class="form-group"><label class="col-sm-2 control-label">时间</label>
-							<div class="col-sm-10"><textarea id="time_id" rows="10" cols="100" class="form-control">
-								</textarea>
+							<div class="col-sm-10"><input id="time_id" rows="10" cols="100" class="form-control">
+								</input>
 							</div>
 						</div>
 						<div class="hr-line-dashed"></div>
@@ -133,9 +137,10 @@
 	</div>
 	{% endif %}
 </div>
+<script src="{{ url_for('static', filename='js/echarts.js') }}"></script>
 <script>
 	function search() {
-		location.href='/grade/list/?subject='+$("#grade_search_id").val();
+		location.href='/grade/?subject='+$("#grade_search_id").val();
 	}
 	function addgrade(){
 		$.post('/grade/add/', {
@@ -192,13 +197,6 @@
 			hoverAnimation: false,
 			data : y_data,
 		},
-		{
-			name: '数据',
-			type: 'line',
-			showSymbol: false,
-			hoverAnimation: false,
-			data : y_data,
-		}
 		]
 	};
 	function query(subject_, user_id) {
@@ -207,10 +205,10 @@
 			student_id: user_id,
 			}, function(data) {
 				if (data.code == 0) {
-					option.xAxis.data = data.time;
+					option.xAxis.data = data.name;
 					option.series[0].data = data.value;
 					option.series[0].name = '课程成绩';
-					option.legend.data[1] = '蛤蛤';
+					option.legend.data[0] = '蛤蛤';
 					option.title.text = data.title;
 					myChart1.setOption(option);
 				}

@@ -112,6 +112,7 @@ class Grade(Base):
     student_id = Column(Integer())
     score = Column(Integer())
     subject = Column(String(32))
+    name = Column(String(32))
 
     @classmethod
     def getById(cls, id):
@@ -136,6 +137,18 @@ class Task(Base):
     status = Column(Integer())
     subject = Column(String(32))
     desc = Column(TEXT)
+
+    @classmethod
+    def getByUserId(cls, id):
+        return session.query(cls).filter(cls.student_id==id).order_by(cls.create_time.desc())
+
+    @classmethod
+    def getByTeacherId(cls, id):
+        return session.query(cls).filter(cls.teacher_id==id).order_by(cls.subject)
+
+    @classmethod
+    def getById(cls, id):
+        return session.query(cls).filter(cls.id==id).first()
 
 
 
@@ -185,11 +198,12 @@ class Article(Base):
 
     id = Column(Integer(), primary_key=True)
     title = Column(String(36))
-    desc = Column(TEXT)
+    content = Column(TEXT)
     author = Column(String(28))
     style = Column(Integer())
     dest = Column(Integer())
     create_time = Column(DateTime(), default=func.now())
+    picture_dir = Column(String())
 
 class Comment(Base):
 
