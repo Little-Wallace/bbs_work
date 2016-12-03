@@ -24,11 +24,10 @@ class InputNameAndPassword(Form):
 	password = PasswordField('', validators=[Required()])
 	submit = SubmitField('Login')
 
-class InputOfRegister(Form):
-	name = StringField('', validators=[Required()])
-	email = StringField('', validators=[Email()])
-	password = PasswordField('', validators=[Required()])
-	submit = SubmitField('Register')
+class InputOfTopic(Form):
+	title = StringField('', validators=[Required()])
+	content =TextAreaField('', validators=[Required()])
+	submit = SubmitField('Launch Enter')
 
 @bbs_app.route('/logout/', methods=['GET'])
 @login_required
@@ -99,7 +98,16 @@ def bbs_list(id):
 	else:
 		topic = Topic.getByFlag(id-1)
 	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList = NameList, User = User)
-	
+
+@bbs_app.route('/addtopic/', methods=['GET', 'POST'])
+@login_required
+def addtopic():
+#	flag = 
+	form = InputOfTopic()
+	if form.validate_on_submit():
+		return redirect('/')
+	return render_template('add_topic.html', user = g.user, form = form)
+
 @bbs_app.route('/topic/<id>', methods=['GET', 'POST'])
 @login_required
 def topic(id):

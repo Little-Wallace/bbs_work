@@ -1,0 +1,56 @@
+{% extends "base_csj.html" %}
+{% block page_title %} New Topic {% endblock %}
+{% block page_kind %} Add Topic {% endblock %}
+{% block page_content %}
+<div class = "row">
+<div class="col-lg-11">
+                <div class="wrapper wrapper-content animated fadeInUp">
+                    <div class="ibox">
+                        <div class="ibox-content">
+		                     <div class="row">
+                                <div class="col-lg-12">
+<div class="row">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <h3>
+                                            Radio
+                                        </h3>
+                                        <p>
+                                            Supports bootstrap brand colors: <code>.radio-primary</code>, <code>.radio-danger</code> etc.
+                                        </p>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="radio">
+                                                    <input type="radio" name="radio1" id="radio1" value="option1" checked="">
+                                                    <label for="radio1">
+                                                        Small
+                                                    </label>
+                                                </div>
+                                                <div class="radio-danger">
+                                                    <input type="radio" name="radio1" id="radio2" value="option2">
+                                                    <label for="radio2">
+                                                        Big
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+</div>
+									{% import "bootstrap/wtf.html" as wtf %}
+									<form class="form" method="POST">
+										{{ form.hidden_tag() }}
+										{{ wtf.form_field(form.title, style = "width: 200px; height: 100px;") }}
+										{{ wtf.form_field(form.content, style = "width: 890px; height: 165px;") }}
+										{{ wtf.form_field(form.submit, class="btn btn-primary btn-xs m-l-sm") }}
+									</form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>
+{% endblock %}
+
