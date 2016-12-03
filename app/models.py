@@ -9,7 +9,7 @@ from datetime import datetime
 __author__ = 'xixihaha'
 
 Base = declarative_base()
-engine = create_engine('mysql+mysqldb://root: 7@localhost:3306/bbs?charset=utf8')
+engine = create_engine('mysql+mysqldb://root:123456@localhost:3306/bbs?charset=utf8')
 DBsession = sessionmaker(bind=engine)
 session = DBsession()
 NameList = [('Math','default') ,('English','primary'), ('Chemistry','success'), ('Sport','info'), ('Psychology','warning'), ('Computer Science', 'danger')]

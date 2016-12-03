@@ -113,4 +113,13 @@ def topic(id):
 		sess.add(Comment_Topic(id = 0, content = msg, author = g.user.id, topic_id = id))
 		sess.commit()
 		return redirect('/topic/' + id)
-	return render_template('topic_content.html', user = g.user, t = topic, User = User, NameList = NameList, content = content, comment = comment, form = form)
+        resp = []
+        for c in comment:
+            res = {}
+            res['topic_id'] = c.topic_id
+            res['content'] = c.content
+            res['author'] = c.author
+            res['head'] = User.getById(c.author).head
+            res['create_time'] = c.create_time
+            resp.append(res)
+	return render_template('topic_content.html', user = g.user, t = topic, User = User, NameList = NameList, content = content, comment = resp, form = form)
