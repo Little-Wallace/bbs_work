@@ -90,10 +90,13 @@ def page_not_found(e):
 def internal_server_error(e):
 	return render_template('500.html'), 500
 
-@bbs_app.route('/bbslist/', methods=['GET'])
+@bbs_app.route('/bbslist/<int:id>', methods=['GET'])
 @login_required
-def bbs_list():
-	topic = Topic.getAll()
+def bbs_list(id):
+	if id == 0:
+		topic = Topic.getAll()
+	else:
+		topic = Topic.getByFlag(id-1)
 	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList = NameList, User = User)
 	
 @bbs_app.route('/topic/<id>', methods=['GET', 'POST'])
