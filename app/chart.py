@@ -4,12 +4,12 @@ from flask import g, session, request, make_response, Response, url_for, flash
 from flask.blueprints import Blueprint
 from flask import render_template, redirect
 from app import bbs_app
-from models import User, Topic, Message, ChatInfo, Topic, NameList
+from models import User, Topic, Message, ChatInfo, Topic, NameList, Comment_Topic
 from models import session as sess
 from views import login_required
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, SubmitField, HiddenField, PasswordField
-from wtforms.validators import Required
+from wtforms.validators import Required, Email
 from datetime import datetime
 
 # views_app = Blueprint('views_app', __name__)
@@ -19,9 +19,15 @@ class InputInfo(Form):
 	submit = SubmitField('Send Enter')
 
 class InputNameAndPassword(Form):
-	username = StringField('', validators=[Required()])
+	username = StringField('', validators=[Email()])
 	password = PasswordField('', validators=[Required()])
 	submit = SubmitField('Login')
+
+class InputOfRegister(Form):
+	name = StringField('', validators=[Required()])
+	email = StringField('', validators=[Email()])
+	password = PasswordField('', validators=[Required()])
+	submit = SubmitField('Register')
 
 @bbs_app.route('/logout/', methods=['GET'])
 @login_required
@@ -90,7 +96,17 @@ def bbs_list():
 	topic = Topic.getAll()
 	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList = NameList, User = User)
 	
-@bbs_app.route('/topic/', methods=['GET', 'POST'])
+@bbs_app.route('/topic/<id>', methods=['GET', 'POST'])
 @login_required
-def topic():
-	return render_template('topic_content.html', user = g.user)
+def topic(id):
+	topic = Topic.getById(id)
+	content = topic.content.split('\n')
+	comment = sorted(Comment_Topic.getByTopic(id), key = lambda Comment_Topic:Comment_Topic.create_time)
+	form = InputInfo()
+	if form.validate_on_submit():
+		msg = form.content.data
+		form.content.data = ""
+		sess.add(Comment_Topic(id = 0, content = msg, author = g.user.id, topic_id = id))
+		sess.commit()
+		return redirect('/topic/' + id)
+	return render_template('topic_content.html', user = g.user, t = topic, User = User, NameList = NameList, content = content, comment = comment, form = form)
