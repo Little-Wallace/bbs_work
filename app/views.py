@@ -312,7 +312,6 @@ def airticle_list():
         if u:
             res['author'] = u.name
         if a.tags:
-            print type(a.tags)
             tags = json.loads(unicode(a.tags))
             res['tags'] = tags
         if a.views: 
@@ -332,8 +331,11 @@ def airticle(p_id):
     a = Article.getById(p_id)
     if not a:
         return render_template('error.html', user=g.user, error='haha')
-    print a.content
+    page_num = request.args.get('page_num', 1)
+    page_num = int(page_num)
+    offset = (page_num - 1)* 5
     cc = a.content.split('\n')
+    page_count = Comment.countByArticleId(a.id)
     res = {
         'id' : a.id,
         'title' : a.title,
@@ -344,11 +346,11 @@ def airticle(p_id):
         'views': 0,
         'author': u'佚名',
     }
+    page_count = (page_count + 4) / 5
     u = User.getById(a.author_id)
     if u:
         res['author'] = u.name
     if a.tags:
-        print type(a.tags)
         tags = json.loads(unicode(a.tags))
         res['tags'] = tags
     if a.views: 
@@ -364,7 +366,7 @@ def airticle(p_id):
         vie = []
         vie.append(g.user.id)
         a.views = json.dumps(vie)
-    cc = Comment.getByArticleId(a.id)
+    cc = Comment.getByArticleId(a.id, offset=offset)
     resp = []
     for c in cc:
         ret = {
@@ -378,9 +380,58 @@ def airticle(p_id):
         if u:
             ret['author'] = u.name
         resp.append(ret)
-    return render_template('article.html', user=g.user, article=res, comments=resp)
+    print page_num
+    return render_template('article.html', user=g.user, article=res, comments=resp, 
+            article_id=p_id, page_num=page_num, page_count=page_count)
+
+@bbs_app.route('/article/add/comment/', methods=['POST'])
+@login_required
+def add_article_comment():
+    p_id = request.form.get('article_id', None)
+    user_id = g.user.id
+    content = request.form.get('content', None)
+    print p_id
+    p_id = int(p_id)
+    c = Comment()
+    c.article_id = p_id
+    c.user_id = user_id
+    c.content = content
+    resp = json_response()
+    try:
+        sess.add(c)
+        sess.commit()
+        resp.data = json.dumps({'code': 0, 'msg': u'发表成功'})
+        print 'add succ'
+    except Exception, ex:
+        print ex
+        resp.data = json.dumps({'code': -1, 'msg': u'发表失败'})
+    return resp
+
 
 @bbs_app.route('/article/push/', methods=['GET'])
 @login_required
 def article_push():
-    pass
+    return render_template('add_article.html', user=g.user)
+
+@bbs_app.route('/article/add/', methods=['POST'])
+@login_required
+def add_article():
+    title = request.form.get('title', None)
+    if title:
+        print title
+    content = request.form.get('content', None)
+    if content:
+        print content
+    a = Article() 
+    a.content = content
+    a.title = title
+    a.author_id = g.user.id
+    resp = json_response()
+    try:
+        sess.add(a)
+        sess.commit()
+        resp.data = json.dumps({'code':0, 'msg': u'发表成功'})
+    except Exception, ex:
+        resp.data = json.dumps({'code':-1, 'msg': u'发表失败'})
+        print ex
+    return resp

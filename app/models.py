@@ -40,7 +40,7 @@ class User(Base):
     id_card = Column(String(32))
     group_id=Column(Integer())
     address = Column(String(32))
-
+    head = Column(String(128), default='img/cup.png')
 
     create_time = Column(DateTime(), default=datetime.now())
 
@@ -60,6 +60,7 @@ class User(Base):
     @classmethod
     def getAll(cls):
         return session.query(cls).all()
+
 
 class ChatInfo(Base):
 	
@@ -237,8 +238,8 @@ class Comment(Base):
         return session.query(func.count(cls.id)).filter(cls.article_id==article_id).scalar()
 
     @classmethod
-    def getByArticleId(cls, article_id):
-        return session.query(cls).filter(cls.article_id==article_id).all()
+    def getByArticleId(cls, article_id, offset=0):
+        return session.query(cls).filter(cls.article_id==article_id).order_by(cls.create_time.desc()).offset(offset).limit(5).all()
 
 
 if __name__ == '__main__':

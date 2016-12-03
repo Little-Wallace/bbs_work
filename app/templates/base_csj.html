@@ -8,11 +8,22 @@
 
     <title>家校沟通系统</title>
 
-	<link href="{{ url_for('static', filename='css/cssBycsj/css/bootstrap.min.css') }}" rel="stylesheet">
-	<link href="{{ url_for('static', filename='css/cssBycsj/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/plugins/summernote/summernote.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/plugins/summernote/summernote-bs3.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
-	<link href="{{ url_for('static', filename='css/cssBycsj/css/animate.css') }}" rel="stylesheet">
-	<link href="{{ url_for('static', filename='css/cssBycsj/css/style.css') }}" rel="stylesheet">
+    <!-- Mainly scripts -->
+	<script src="{{ url_for('static', filename='js/jquery-2.1.1.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+    <!-- Custom and plugin javascript -->
+	<script src="{{ url_for('static', filename='js/inspinia.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/pace/pace.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/summernote/summernote.min.js') }}"></script>
 
 </head>
 
@@ -25,7 +36,7 @@
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
                     <div class="dropdown profile-element">
-						<span>Hi,</span>
+						<span><img alt="image" class="img-circle" width='48' height='48' src="{{ url_for('static', filename=user.head) }}"></span>
                         <a data-toggle="dropdown" class="dropdown-toggle">
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"> {{ user.name }}</strong>
 								</span> <span class="text-muted text-xs block" id="login_user_id">教师id: {{ user.id }}</span> </span> </a>
@@ -227,16 +238,6 @@
 
         </div>
         </div>
-
-    <!-- Mainly scripts -->
-	<script src="{{ url_for('static', filename='js/jquery-2.1.1.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
-
-    <!-- Custom and plugin javascript -->
-	<script src="{{ url_for('static', filename='js/inspinia.js') }}"></script>
-	<script src="{{ url_for('static', filename='js/plugins/pace/pace.min.js') }}"></script>
 
 
 </body>

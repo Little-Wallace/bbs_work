@@ -25,7 +25,8 @@
 							<h1> {{article.title}} </h1>
 						</div>
 					{% for c in article.content %}
-					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ c }}</p>
+					<!--p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ c }}</p-->
+					{{ c|safe }}
 					{% endfor %}
 					<hr>
 					<div class="row">
@@ -63,8 +64,63 @@
 								</div>
 							</div>
 						{% endfor %}
+						<div class="text-center">
+							<div class="btn-group">
+								<button class="btn btn-white" {% if page_num == 1 %}disabled="true" {% endif %} type="button", onclick="changeto('{{page_num-1}}', '{{article_id}}')"><i class="fa fa-chevron-left"></i></button>
+								{% for r in range(page_count) %}
+								<button class="btn btn-white{% if loop.index == page_num %} active{% endif %}" onclick="changeto('{{loop.index}}', '{{article_id}}');">{{ loop.index }}</button>
+								{% endfor %}
+								<button class="btn btn-white" {% if page_num == page_count %}disabled="true" {% endif %}type="button" onclick="changeto('{{page_num+1}}', '{{article_id}}')">
+									<i class="fa fa-chevron-right"></i> </button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="social-feed-box">
+							<div class="social-avatar">
+								<a href class="pull-left">
+									<img alt="image" src="{{ url_for('static', filename=user.head) }}">
+								</a>
+								<div class="media-body">
+									<a href="#">
+										{{ user.name }}
+									</a>
+								</div>
+							</div>
+							<div class="social-body">
+								<div class="ibox-content">
+								<form method="get" class="form-horizontal">
+									<div class="form-group">
+										<div class="col-sm-10"><textarea id="content_id" rows="10" cols="100" class="form-control">
+											</textarea>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-sm-4 col-sm-offset-2">
+											<button class="btn btn-primary" onclick="addcomment({{ article_id }});">发表评论</button>
+										</div>
+									</div>
+								</form>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	<script>
+	function addcomment(_id){
+		$.post('/article/add/comment/', {
+			article_id: _id,
+			content: $("#content_id").val(),
+		}, function(data) {
+			alert(data.msg);
+			location.reload();
+		}, "json");
+	}
+	function changeto(page_num, article_id) {
+		location.href="/article/"+article_id+"/?page_num="+page_num;
+	}
+	</script>
 {% endblock %}
