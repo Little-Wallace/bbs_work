@@ -2,55 +2,63 @@
 {% block page_title %} New Topic {% endblock %}
 {% block page_kind %} Add Topic {% endblock %}
 {% block page_content %}
+
+
 <div class = "row">
-<div class="col-lg-11">
-                <div class="wrapper wrapper-content animated fadeInUp">
+<div class="col-lg-12">
+                <div class="ibox float-e-margins">
                     <div class="ibox">
                         <div class="ibox-content">
+                        	<form class="form" method="POST">
 		                     <div class="row">
-                                <div class="col-lg-12">
-<div class="row">
-                                <div class="col-md-4">
-                                    <fieldset>
+                                <div class="col-md-8">
+                                	<fieldset>
                                         <h3>
-                                            Radio
+                                            Flag
                                         </h3>
                                         <p>
-                                            Supports bootstrap brand colors: <code>.radio-primary</code>, <code>.radio-danger</code> etc.
+                                            Please choose a flag for your topic.
                                         </p>
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <div class="radio">
-                                                    <input type="radio" name="radio1" id="radio1" value="option1" checked="">
-                                                    <label for="radio1">
-                                                        Small
-                                                    </label>
-                                                </div>
-                                                <div class="radio-danger">
-                                                    <input type="radio" name="radio1" id="radio2" value="option2">
-                                                    <label for="radio2">
-                                                        Big
-                                                    </label>
-                                                </div>
-                                            </div>
+                                        <div class="radio radio-default radio-inline">
+                                            <input type="radio" id="inlineRadio1" value="1" name="radioInline" checked="">
+                                            <label for="inlineRadio1"> Math </label>
+                                        </div>
+                                        <div class="radio radio-success radio-inline">
+                                            <input type="radio" id="inlineRadio2" value="2" name="radioInline">
+                                            <label for="inlineRadio2"> English </label>
+                                        </div>
+                                        <div class="radio radio-primary radio-inline">
+                                            <input type="radio" id="inlineRadio3" value="3" name="radioInline">
+                                            <label for="inlineRadio3"> Chemistry </label>
+                                        </div>
+                                        <div class="radio radio-info radio-inline">
+                                            <input type="radio" id="inlineRadio4" value="4" name="radioInline">
+                                            <label for="inlineRadio4"> Sport </label>
+                                        </div>
+                                        <div class="radio radio-warning radio-inline">
+                                            <input type="radio" id="inlineRadio5" value="5" name="radioInline">
+                                            <label for="inlineRadio5"> Psychology </label>
+                                        </div>
+                                        <div class="radio radio-danger radio-inline">
+                                            <input type="radio" id="inlineRadio6" value="6" name="radioInline">
+                                            <label for="inlineRadio6"> Computer Science </label>
                                         </div>
                                     </fieldset>
                                 </div>
+                             </div>
 
-</div>
-									{% import "bootstrap/wtf.html" as wtf %}
-									<form class="form" method="POST">
-										{{ form.hidden_tag() }}
-										{{ wtf.form_field(form.title, style = "width: 200px; height: 100px;") }}
-										{{ wtf.form_field(form.content, style = "width: 890px; height: 165px;") }}
-										{{ wtf.form_field(form.submit, class="btn btn-primary btn-xs m-l-sm") }}
+								{% import "bootstrap/wtf.html" as wtf %}
+							
+									{{ form.hidden_tag() }}
+									{{ wtf.form_field(form.title, class = "form-control", placeholder="Title") }}
+									{{ wtf.form_field(form.content, style = "width: 1000px; height: 165px;", placeholder="Content") }}
+									{{ wtf.form_field(form.submit, class="btn btn-primary btn-xs m-l-sm") }}
 									</form>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+</div>
 </div>
 {% endblock %}
 
