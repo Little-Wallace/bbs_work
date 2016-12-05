@@ -23,7 +23,7 @@
 			</div>
 		</header>
 		<div class="clearfix"></div>
-		<div class="chat_window">
+		<div class="chat_window" id="chat_id">
 			<p>You're now chatting with a teacher, say hi~ {{other_id}} <br/> </p>
 			{% for i in information %}
 				<div class="msg" style="opacity: 1; width: 100%; display: block;">
@@ -51,7 +51,17 @@
 	</div>
 
 </body>
-<script type="text/javascript" src="../static/js/jquery.min.js"></script>
-<script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../static/js/chat_room.js"></script>
+<script src="{{ url_for('static', filename='js/jquery-2.1.1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#chat_id').scrollTop( $('#chat_id')[0].scrollHeight );
+});
+function myfresh() {
+	location.reload();
+}
+setTimeout('myfresh()', 5000);
+</script>
 </html>

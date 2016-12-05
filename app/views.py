@@ -322,7 +322,7 @@ def airticle_list():
         res = {
             'id' : a.id,
             'title' : a.title,
-            'intro': intro[:100]+"...",
+            'intro': intro[:200]+"...",
             'create_time': a.create_time,
             'tags': [],
             'comments': Comment.countByArticleId(a.id),
