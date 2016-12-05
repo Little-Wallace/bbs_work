@@ -1,6 +1,6 @@
 #encoding: utf-8
 from functools import wraps
-import json
+import json, re
 from flask import g, session, request, make_response, Response, url_for
 from flask.blueprints import Blueprint
 from flask import render_template, redirect
@@ -10,7 +10,11 @@ from models import User, Message, Grade, or_, Task, Article, ArticleToUser, Comm
 from models import session as sess
 from wtforms import StringField, TextAreaField, SubmitField, HiddenField, PasswordField
 from wtforms.validators import Required
-
+CHAR_ENTITIES={
+        'nbsp':' ','160':' ','lt':'<','60':'<', 
+        'gt':'>','62':'>', 'amp':'&','38':'&',
+        'quot':'"','34':'"',}
+re_charEntity=re.compile(r'&#?(?P<name>\w+);')
 # views_app = Blueprint('views_app', __name__)
 
 def login_required(func):
@@ -291,17 +295,34 @@ def dohomework(t_id):
         resp.data = json.dumps({'code': -1, 'reason': ex})
     return resp
 
+
+def replaceCharEntity(htmlstr):
+    sz=re_charEntity.search(htmlstr)
+    while sz:
+	entity=sz.group()#entity全称，如>
+	key=sz.group('name')#去除&;后entity,如>为gt
+	try:
+	  htmlstr=re_charEntity.sub(CHAR_ENTITIES[key],htmlstr,1)
+	  sz=re_charEntity.search(htmlstr)
+	except KeyError:
+	  #以空串代替
+	  htmlstr=re_charEntity.sub('',htmlstr,1)
+	  sz=re_charEntity.search(htmlstr)
+    return htmlstr    
+
 @bbs_app.route('/article/list/', methods=['GET'])
 @login_required
 def airticle_list():
     art = ArticleToUser.getByUserId(g.user.id)
     articles = []
+    re_h = re.compile('</?\w+[^>]*>')
     for a_u in art:
         a = Article.getById(a_u.article_id)
+        intro = replaceCharEntity(re_h.sub('', a.content))
         res = {
             'id' : a.id,
             'title' : a.title,
-            'intro': a.intro,
+            'intro': intro[:100]+"...",
             'create_time': a.create_time,
             'tags': [],
             'comments': Comment.countByArticleId(a.id),
