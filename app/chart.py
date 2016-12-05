@@ -10,7 +10,7 @@ from models import session as sess
 from views import login_required
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, SubmitField, HiddenField, PasswordField
-from wtforms.validators import Required, Email
+from wtforms.validators import Required, Email, Length
 from datetime import datetime
 
 # views_app = Blueprint('views_app', __name__)
@@ -24,8 +24,13 @@ class InputNameAndPassword(Form):
 	password = PasswordField('', validators=[Required()])
 	submit = SubmitField('Login')
 
+class InputOfTopic(Form):
+	title = StringField('', validators=[Length(min=4, max=37)])
+	content =TextAreaField('', validators=[Required()])
+	submit = SubmitField('Launch Enter')
+
 class InputOfRegister(Form):
-	name = StringField('', validators=[Required()])
+	username = StringField('', validators=[Required()])
 	email = StringField('', validators=[Email()])
 	password = PasswordField('', validators=[Required()])
 	submit = SubmitField('Register')
@@ -51,10 +56,6 @@ def login():
 		else:
 			flash('Invalid username or password', 'danger')
 	return render_template('login.html', form = form)
-
-@bbs_app.route('/register/', methods=['GET', 'POST'])
-def register():
-	return render_template('register.html')
 
 @bbs_app.route('/', methods=['GET'])
 @login_required
@@ -99,8 +100,49 @@ def bbs_list(id):
 	else:
 		topic = Topic.getByFlag(id-1)
 	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList = NameList, User = User)
-	
-@bbs_app.route('/topic/<id>', methods=['GET', 'POST'])
+
+@bbs_app.route('/addtopic/<int:t_id>', methods=['GET', 'POST'])
+@login_required
+def addtopic(t_id):
+	form = InputOfTopic()
+	if t_id != 0:
+		topic = Topic.getById(t_id)
+		form.content.data = topic.content
+		form.title.data = topic.title
+	if form.validate_on_submit():
+		flag_id = request.form['radioInline']
+		title = form.title.data
+		content = form.content.data
+		if t_id != 0:
+			sess.query(Topic).filter(Topic.id == t_id).update({Topic.content : content, Topic.author : g.user.id, Topic.title : title, Topic.flag : flag_id})
+		else:
+			sess.add(Topic(id = 0, content = content, author = g.user.id, title = title, flag = flag_id))
+		sess.commit()
+		return redirect('/bbslist/0')
+	return render_template('add_topic.html', user = g.user, form = form)
+
+@bbs_app.route('/register/', methods=['GET', 'POST'])
+def register():
+	form = InputOfRegister()
+	if form.validate_on_submit():
+		name = form.username.data
+		pswd = form.password.data
+		email = form.email.data
+		form.username.data = ""
+		form.password.data = ""
+		form.email.data = ""
+		if User.checkByEmail(email):
+			flash('This email has been used!', 'danger')
+		else:
+			sess.add(User(id=0, name = name, password = pswd , email= email))
+			sess.commit()
+			g.user = User.checkByEmail(email)
+			session['logged_in'] = True
+			session['user_id'] = g.user.id
+			return redirect('/')
+	return render_template('register.html', form = form)		
+
+@bbs_app.route('/topic/<int:id>', methods=['GET', 'POST'])
 @login_required
 def topic(id):
 	topic = Topic.getById(id)

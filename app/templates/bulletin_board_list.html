@@ -10,7 +10,7 @@
                         <div class="ibox-title">
                             <h5>All projects assigned to this account</h5>
                             <div class="ibox-tools">
-                                <a href="" class="btn btn-primary btn-xs">Launch new topic</a>
+                                <a href="/addtopic/0" class="btn btn-primary btn-xs">Launch new topic</a>
                             </div>
                         </div>
                         <div class="ibox-content">
@@ -39,7 +39,7 @@
                                     {% for t in topic %}
                                     <tr>
                                         <td class="project-status">
-                                            <button type="button" class="btn btn-{{NameList[t.flag][1]}} btn-xs">{{ NameList[t.flag][0] }}</button>
+                                            <button type="button" class="btn btn-{{NameList[t.flag-1][1]}} btn-xs">{{ NameList[t.flag-1][0] }}</button>
                                         </td>
                                         <td class="project-title">
                                             <a href="/topic/{{t.id}}">{{t.title}}</a>
@@ -59,7 +59,7 @@
                                         </td>
                                         {% if t.author == user.id %}
                                         <td class="project-actions">
-                                            <a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
+                                            <a href="/addtopic/{{t.id}}" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Edit </a>
                                         </td>
                                         {% endif%}
                                     </tr>
