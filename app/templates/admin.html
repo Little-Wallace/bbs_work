@@ -1,0 +1,148 @@
+{% extends 'base_csj.html' %}
+{% block page_title %}
+通知发布
+{% endblock %}
+{% block page_content %}
+<script>
+	function search() {
+		if ($("#option1").hasClass("active")){
+			location.href="/user/listi?priv=student&name="+$("#user_search_id").val();
+		}
+		else if($("#option2").hasClass("active")){
+			location.href="/user/list/?priv=teacher&name="+$("#user_search_id").val();
+		}
+		else{
+			location.href='/user/list/?name='+$("#user_search_id").val();
+		}
+	}
+	function change(st){
+		location.href='/user/list/?priv='+st;
+	}
+	function changepriv(u_id){
+		$.post('/user/update/', {
+			user_id: u_id,
+			priv: $("#select_"+u_id).val(),
+		}, function(data) {
+			if (data.code == 0){
+				alert(data.msg);
+				location.href='/user/list/';
+			}
+		}, "json");
+	}
+	function changeinfo(u_id){
+		$.post('/user/update/', {
+			user_id: u_id,
+			password: $("#password_"+u_id).val(),
+			name: $("#name_"+u_id).val(),
+			group_id: $("#group_"+u_id).val(),
+		}, function(data) {
+			if (data.code == 0){
+				alert(data.msg);
+				location.href='/user/list/';
+			}
+		}, "json");
+	}
+</script>
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<h5>Custom responsive table </h5>
+					<div class="ibox-tools">
+						<a class="collapse-link">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<i class="fa fa-wrench"></i>
+						</a>
+						<ul class="dropdown-menu dropdown-user">
+							<li><a href="#">Config option 1</a>
+							</li>
+							<li><a href="#">Config option 2</a>
+							</li>
+						</ul>
+						<a class="close-link">
+							<i class="fa fa-times"></i>
+						</a>
+					</div>
+				</div>
+				<div class="ibox-content">
+					<div class="row">
+						<div class="col-sm-4 m-b-xs">
+							<div data-toggle="buttons" class="btn-group">
+								<label class="btn btn-sm btn-white {% if priv == 'student' %}active{% endif %}" id="option1" onclick="change('student')";> 
+									<input type="radio" id="__option1" name="options">
+									学生（家长） </label>
+								<label class="btn btn-sm btn-white {% if priv == 'teacher' %}active{% endif %}" id="option2" onclick="change('teacher');"> 
+									<input type="radio" id="__option2" name="options">
+								教师</label>
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<div class="input-group"><input id="user_search_id" type="text" placeholder="Search" class="input-sm form-control"> <span class="input-group-btn">
+								<button type="button" class="btn btn-sm btn-primary" onclick="search();"> Go!</button> </span></div>
+						</div>
+					</div>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+							<tr>
+								<th>用户id</th>
+								<th>姓名</th>
+								<th>班级</th>
+								<th>状态</th>
+								<th>修改信息</th>
+							</tr>
+							</thead>
+							<tbody>
+								{% for m in users %}
+									<tr>
+										<td>{{ m.id }}</td>
+										<td>{{ m.name }}</td>
+										<td>{{ m.group_id }}</td>
+										<td>
+										<select name="sel" id="select_{{m.id}}" onchange="changepriv('{{m.id}}')">
+											<option value="student" {% if m.priv == 'student' %}selected="selected"{% endif %}>学生家长</option>
+											<option value="teacher" {% if m.priv == 'teacher' %}selected="selected"{% endif %}>教师</option>
+											<option value="admin" {% if m.priv == 'admin' %}selected="selected"{% endif %}>管理员</option>
+										</select>
+										</td>
+										<td>
+											<button class="btn btn-primary btn-xs" type="button" data-toggle="modal"
+																data-target="#myModal_{{m.id}}">修改个人信息</button>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% for u in users %}
+	<div class="modal inmodal" id="myModal_{{u.id}}" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+		<div class="modal-dialog" id="dialog1">
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+					<i class="fa fa-laptop modal-icon"></i>
+					<h4 class="modal-title">修改用户信息</h4>
+					<small class="font-bold">不想修改信息不用填写</small>
+				</div>
+				<div class="modal-body">
+					<div class="form-group"><label>新密码</label> <input type="password" id="password_{{u.id}}" class="form-control" value={{u.password}}></div>
+					<div class="form-group"><label>新班级</label> <input type="text" id="group_{{u.id}}" placeholder="{{u.group_id}}" class="form-control" value="{{u.group_id}}"></div>
+					<div class="form-group"><label>新姓名</label> <input type="text" id="name_{{u.id}}" placeholder="输入标签名称" class="form-control" value="{{u.name}}"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-white" data-dismiss="modal" id="dialog_button_{{u.id}}">Close</button>
+					<button type="button" class="btn btn-primary" onclick="changeinfo('{{u.id}}')">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+{% endblock %}

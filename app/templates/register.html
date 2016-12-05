@@ -8,11 +8,17 @@
 
     <title>INSPINIA | Register</title>
 
-    <link href="../static/css/cssBycsj/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../static/css/cssBycsj/font-awesome/css/font-awesome.css" rel="stylesheet">
-    <link href="../static/css/cssBycsj/css/plugins/iCheck/custom.css" rel="stylesheet">
-    <link href="../static/css/cssBycsj/css/animate.css" rel="stylesheet">
-    <link href="../static/css/cssBycsj/css/style.css" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/plugins/summernote/summernote.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/plugins/summernote/summernote-bs3.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <!-- Mainly scripts -->
+	<script src="{{ url_for('static', filename='js/jquery-2.1.1.js') }}"></script>
+
 
 </head>
 
@@ -57,10 +63,16 @@
     </div>
 
     <!-- Mainly scripts -->
-    <script src="js/jquery-2.1.1.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <!-- iCheck -->
-    <script src="js/plugins/iCheck/icheck.min.js"></script>
+    <script src="{{ url_for('static', filename='js/plugins/iCheck/icheck.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+    <!-- Custom and plugin javascript -->
+	<script src="{{ url_for('static', filename='js/inspinia.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/pace/pace.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/plugins/summernote/summernote.min.js') }}"></script>
+
     <script>
         $(document).ready(function(){
             $('.i-checks').iCheck({

@@ -14,20 +14,27 @@
 </li>
 {% endblock %}
 {% block page_content %}
+	<link href="{{ url_for('static', filename='css/plugins/sweetalert/sweetalert.css') }}" rel="stylesheet">
 	<div class="wrapper wrapper-content  animated fadeInRight article">
 		<div class="row">
 			<div class="col-lg-10 col-lg-offset-1">
 				<div class="ibox">
 					<div class="ibox-content">
 						<button class="btn btn-white btn-xs" type="button">{{ article.author }}</button>
+						{% if user.priv == 'teacher' or user.priv == 'admin' %}
+						<div class="pull-right">
+							<button class="btn btn-primary btn-xs" type="button" data-toggle="modal"
+								data-target="#myModal1">管理标签</button>
+							<button class="btn btn-white btn-xs" type="button" data-toggle="modal"
+								data-target="#myModal2">推送管理</button>
+						</div>
+						{% endif %}
 						<div class="text-center article-title">
 						<span class="text-muted"><i class="fa fa-clock-o"></i>{{ article.create_time }}</span>
 							<h1> {{article.title}} </h1>
 						</div>
-					{% for c in article.content %}
+						{{ article.content|safe }}
 					<!--p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ c }}</p-->
-					{{ c|safe }}
-					{% endfor %}
 					<hr>
 					<div class="row">
 						<div class="col-md-6">
@@ -109,6 +116,31 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal inmodal" id="myModal1" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+		<div class="modal-dialog" id="dialog1">
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+					<i class="fa fa-laptop modal-icon"></i>
+					<h4 class="modal-title">添加或删除标签</h4>
+					<small class="font-bold">单击标签确认删除， 或在下方输入新标签点击提交确认添加</small>
+				</div>
+				<div class="modal-body">
+					<p>
+					{% for x in article.tags %}
+						<button class="btn btn-primary btn-xs demo4" type="button" onclick="deletag('{{article_id}}', '{{x}}')">{{ x }}</button>
+					{% endfor %}
+					</p>
+							<div class="form-group"><label>添加新标签</label> <input type="text" id="new_tag_id" placeholder="输入标签名称" class="form-control"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-white" data-dismiss="modal" id="dialog1_button">Close</button>
+					<button type="button" class="btn btn-primary" onclick="addtag('{{article_id}}')">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/plugins/sweetalert/sweetalert.min.js') }}"></script>
 	<script>
 	function addcomment(_id){
 		$.post('/article/add/comment/', {
@@ -119,8 +151,42 @@
 			location.reload();
 		}, "json");
 	}
+	function addtag(_id){
+		$.post('/article/tag/add/', {
+			article_id: _id,
+			tag: $("#new_tag_id").val(),
+		}, function(data) {
+			alert(data.msg);
+			location.reload();
+		}, "json");
+	}
 	function changeto(page_num, article_id) {
 		location.href="/article/"+article_id+"/?page_num="+page_num;
+	}
+	function deletag(article_id, tag){
+		$("#dialog1_button").click();
+		swal({
+			title: "Are you sure?",
+			text: "您确定要移除次标签吗？",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Yes, delete it!",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		}, function(isConfirm) {
+			if (isConfirm){
+				$.post('/article/tag/delete/', {
+					article_id: article_id,
+					tag: tag,
+					}, function(data) {
+					swal("Deleted!", "该标签已被移除", "success");
+				}, "json");
+			}
+			else{
+				swal("Cancelled", "ssss","error");
+			}
+		});
 	}
 	</script>
 {% endblock %}

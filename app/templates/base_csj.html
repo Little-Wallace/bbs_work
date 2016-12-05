@@ -78,6 +78,12 @@
                 <li>
                     <a href="/bbslist/0"><i class="fa fa-globe"></i> <span class="nav-label">家长社区</span></a>
                 </li>
+				{% if user.priv == 'admin' %}
+	            <li>
+                    <a href="/user/list/"><i class="fa fa-star"></i> <span class="nav-label">用户权限管理</span></a>
+                </li>
+				{% endif %}
+				
             </ul>
         </div>
     </nav>

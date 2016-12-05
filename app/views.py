@@ -334,7 +334,6 @@ def airticle(p_id):
     page_num = request.args.get('page_num', 1)
     page_num = int(page_num)
     offset = (page_num - 1)* 5
-    cc = a.content.split('\n')
     page_count = Comment.countByArticleId(a.id)
     res = {
         'id' : a.id,
@@ -342,7 +341,7 @@ def airticle(p_id):
         'create_time': str(a.create_time),
         'tags': [],
         'comments': Comment.countByArticleId(a.id),
-        'content': cc,
+        'content': a.content,
         'views': 0,
         'author': u'佚名',
     }
@@ -430,8 +429,92 @@ def add_article():
     try:
         sess.add(a)
         sess.commit()
+        print a.id
+        sess.add(ArticleToUser(user_id=0, article_id=a.id))
+        sess.commit()
         resp.data = json.dumps({'code':0, 'msg': u'发表成功'})
     except Exception, ex:
         resp.data = json.dumps({'code':-1, 'msg': u'发表失败'})
         print ex
     return resp
+
+@bbs_app.route('/article/tag/add/', methods=['POST'])
+@login_required
+def aircle_tag_add():
+    article_id = request.form.get('article_id', None)
+    tag = request.form.get('tag', None)
+    a = Article.getById(article_id)
+    resp = json_response()
+    try:
+        if a:
+            if a.tags:
+                res = json.loads(a.tags)
+                if tag not in res:
+                    res.append(tag)
+                    a.tags = json.dumps(res)
+            else:
+                a.tags = json.dumps([tag,])
+            sess.commit()
+        resp.data = json.dumps({'code':0, 'msg': u'添加成功'})
+    except Exception, ex:
+        resp.data = json.dumps({'code':-1, 'msg': u'添加失败'})
+        print ex
+    return resp
+
+@bbs_app.route('/article/tag/delete/', methods=['POST'])
+@login_required
+def aircle_tag_delete():
+    article_id = request.form.get('article_id', None)
+    tag = request.form.get('tag', None)
+    a = Article.getById(article_id)
+    resp = json_response()
+    try:
+        if a:
+            if a.tags:
+                res = json.loads(a.tags)
+                if tag in res:
+                    res.remove(tag)
+                    a.tags = json.dumps(res)
+                    sess.commit()
+        resp.data = json.dumps({'code':0, 'msg': u'删除成功'})
+    except Exception, ex:
+        resp.data = json.dumps({'code':-1, 'msg': u'删除失败'})
+        print ex
+    return resp
+
+@bbs_app.route('/user/list/', methods=['GET'])
+@login_required
+def user_list():
+    q = sess.query(User)
+    priv = '*'
+    if 'priv' in request.args:
+        priv=request.args.get('priv')
+        q = q.filter(User.priv==priv)
+    if 'desc' in request.args:
+        q = q.filter(User.name.like("%" + request.args.get('name') + "%"))
+    users = q.all()
+    print len(users)
+    return render_template('admin.html', user=g.user, users=users, priv=priv);
+
+@bbs_app.route('/user/update/', methods=['POST'])
+@login_required
+def update_user():
+    u_id = request.form.get('user_id', None)
+    u = User.getById(u_id)
+    resp = json_response()
+    attr = ['priv', 'name', 'password', 'group_id']
+    print request.form
+    try:
+        if u:
+            for x in attr:
+                y = request.form.get(x, None)
+                if y and hasattr(u, x):
+                    setattr(u, x, y)
+                    print "update :User(", u.id, ").", x, "=", y
+            sess.commit()
+        resp.data = json.dumps({'code':0, 'msg': u'修改成功'})
+    except Exception, ex:
+        resp.data = json.dumps({'code':-1, 'msg': u'修改失败'})
+        print ex
+    return resp
+
