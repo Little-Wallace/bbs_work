@@ -67,25 +67,23 @@ def message_list():
     if 'desc' in request.args:
         q = q.filter(Message.title.like("%" + request.args.get('desc') + "%"))
     messages = q.order_by(Message.create_time.desc()).all()
-    if messages and len(messages) > 0:
-        resp = []
-        for m in messages:
-            res = {}
-            res['id'] = m.id
-            res['title'] = m.title
-            res['author'] = u'无'
-            res['create_time'] = str(m.create_time)
-            if m.status == 1:
-                res['status'] = u'已读'
-            else:
-                res['status'] = u'未读'
-            u = User.getById(m.author_id)
-            if u:
-                res['author'] = u.name
-            resp.append(res)
-        return render_template('message_list.html', user=g.user, messages=resp, status=status);
-    else:
-        return render_template('message_list.html', user=g.user)
+    resp = []
+    for m in messages:
+        res = {}
+        res['id'] = m.id
+        res['title'] = m.title
+        res['author'] = u'无'
+        res['create_time'] = str(m.create_time)
+        if m.status == 1:
+            res['status'] = u'已读'
+        else:
+            res['status'] = u'未读'
+        u = User.getById(m.author_id)
+        if u:
+            res['author'] = u.name
+        resp.append(res)
+    return render_template('message_list.html', user=g.user, messages=resp, status=status,
+            cur_page='message');
 
 @bbs_app.route('/message/<int:m_id>/', methods=['GET'])
 @login_required
@@ -163,7 +161,7 @@ def grade_list():
         res['semester'] = grade.semester
         res['score'] = grade.score
         resp.append(res)
-    return render_template('grade.html', user=g.user, grades=resp)
+    return render_template('grade.html', user=g.user, grades=resp, cur_page='grade')
 
 @bbs_app.route('/grade/data/', methods=['POST'])
 @login_required
@@ -249,7 +247,8 @@ def homework_list():
             if u:
                 res['name'] = u.name
             resp.append(res)
-        return render_template('task.html', user=g.user, tasks=resp, status=status);
+        return render_template('task.html', user=g.user, tasks=resp, status=status,
+                cur_page='homework');
     else:
         return render_template('task.html', user=g.user)
 
@@ -342,7 +341,7 @@ def airticle_list():
             except Exception, ex:
                 print ex
         articles.append(res)
-    return render_template('article_list.html', user=g.user, articles=articles);
+    return render_template('article_list.html', user=g.user, articles=articles, cur_page='article');
 
 
 
@@ -402,7 +401,7 @@ def airticle(p_id):
         resp.append(ret)
     print page_num
     return render_template('article.html', user=g.user, article=res, comments=resp, 
-            article_id=p_id, page_num=page_num, page_count=page_count)
+            article_id=p_id, page_num=page_num, page_count=page_count, cur_page='article')
 
 @bbs_app.route('/article/add/comment/', methods=['POST'])
 @login_required
@@ -431,7 +430,7 @@ def add_article_comment():
 @bbs_app.route('/article/push/', methods=['GET'])
 @login_required
 def article_push():
-    return render_template('add_article.html', user=g.user)
+    return render_template('add_article.html', user=g.user, cur_page='article', push='push')
 
 @bbs_app.route('/article/add/', methods=['POST'])
 @login_required
@@ -515,7 +514,7 @@ def user_list():
         q = q.filter(User.name.like("%" + request.args.get('name') + "%"))
     users = q.all()
     print len(users)
-    return render_template('admin.html', user=g.user, users=users, priv=priv);
+    return render_template('admin.html', user=g.user, users=users, priv=priv, cur_page='admin');
 
 @bbs_app.route('/user/update/', methods=['POST'])
 @login_required

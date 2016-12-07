@@ -7,9 +7,7 @@ import json
 import re
 
 if __name__ == '__main__':
-    a = session.query(Article).first()
-    re_h = re.compile('</?\w+[^>]*>')
-    s = re_h.sub('', a.content)
-    print a.content
-    print s
+    u = session.query(User).first()
+    u.head = 'img/saber.png'
+    session.commit()
 

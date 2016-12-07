@@ -66,7 +66,7 @@ def index():
 @login_required
 def chattinglist():
 	users = User.getAll()
-	return render_template('chattinglist.html', user = g.user, users = users)
+	return render_template('chattinglist.html', user = g.user, users = users, cur_page='chat')
 
 @bbs_app.route('/communication/<other_id>', methods=['GET','POST'])
 @login_required
@@ -99,7 +99,8 @@ def bbs_list(id):
 		topic = Topic.getAll()
 	else:
 		topic = Topic.getByFlag(id-1)
-	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList = NameList, User = User)
+	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList =
+                NameList, User = User, cur_page='bbs')
 
 @bbs_app.route('/addtopic/<int:t_id>', methods=['GET', 'POST'])
 @login_required
