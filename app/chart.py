@@ -68,7 +68,7 @@ def chattinglist():
 	users = User.getAll()
 	return render_template('chattinglist.html', user = g.user, users = users, cur_page='chat')
 
-@bbs_app.route('/communication/<other_id>', methods=['GET','POST'])
+@bbs_app.route('/communication/<int:other_id>', methods=['GET','POST'])
 @login_required
 def chat(other_id):
 	a = ChatInfo.getBySenderAndTo(g.user.id, other_id)
@@ -83,6 +83,14 @@ def chat(other_id):
 		sess.commit()
 		return redirect('/communication/' + other_id)
 	return render_template('chat_room.html', information = mergelist, form = form, other_id = other_id)
+
+@bbs_app.route('/communication/<int:other_id>/get/', methods=['GET'])
+@login_required
+def get_chat_info(other_id):
+    a = ChatInfo.getBySenderAndTo(g.user.id, other_id)
+    b = ChatInfo.getBySenderAndTo(other_id, g.user.id)
+    mergelist = sorted(a+b, key = lambda ChatInfo:ChatInfo.create_time)
+    return render_template('chat_info.html', information = mergelist, other_id = other_id)
 
 @bbs_app.errorhandler(404)
 def page_not_found(e):

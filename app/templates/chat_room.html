@@ -60,7 +60,9 @@ $(document).ready(function(){
 	$('#chat_id').scrollTop( $('#chat_id')[0].scrollHeight );
 });
 function myfresh() {
-	location.reload();
+	$.get(location.href+'/get/',function(result){
+		$("#chat_id").html(result);
+	});
 }
 setTimeout('myfresh()', 5000);
 </script>
