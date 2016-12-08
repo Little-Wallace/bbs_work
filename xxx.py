@@ -7,11 +7,10 @@ import json
 import re
 
 if __name__ == '__main__':
-    u = session.query(User).first()
-    print u.priv
-    u.priv = 'admin'
+    for g in session.query(Grade).all():
+        print g.student_id
+        print g.score
     session.commit()
-
     for i in range(0, 10):
         t = Task()
         t.name = 'haha'
@@ -20,6 +19,6 @@ if __name__ == '__main__':
         t.status = 0
         t.subject = u'人生的经验'
         t.desc = u'与长者谈笑风生'
-        session.add(t)
+    #    session.add(t)
     session.commit()
 

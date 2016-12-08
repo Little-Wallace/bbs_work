@@ -143,10 +143,11 @@ def addmessage():
 @login_required
 def grade_list():
     print g.user.priv
-    if g.user.priv == 'teacher':
-        q = Grade.getByTeacherId(g.user.id)
-    else: 
+    if g.user.priv == 'student':
         q = Grade.getByUserId(g.user.id)
+    else: 
+        q = Grade.getByTeacherId(g.user.id)
+        print q.count()
     subj = request.args.get('subject', None)
     if subj:
         grades = q.filter(or_(Grade.subject.like("%" + subj + "%"), Grade.name.like("%" + subj + "%"))).all()
@@ -161,6 +162,8 @@ def grade_list():
         u = User.getById(grade.student_id)
         if u:
             res['name'] = u.name
+        else:
+            print grade.student_id
         u = User.getById(grade.teacher_id)
         if u:
             res['teacher'] = u.name
@@ -199,14 +202,18 @@ def get_grade_data():
 @bbs_app.route('/grade/add/', methods=['POST'])
 @login_required
 def addgrade():
-    if g.user.priv != User.TEACHER:
+    if g.user.priv == 'student':
         return render_template('error.html', user=g.user, error=u'haha')
     m = Grade()
-    m.title = request.form.get('subject', None)
+    m.title = request.form.get('title', None)
+    m.subject = request.form.get('subject', None)
     m.contest_time = request.form.get('contest_time', None)
     m.user_id = request.form.get('user_id', None)
     m.teacher_id = g.user.id
+    m.student_id = request.form.get('student_id', None)
     m.semester = request.form.get('semester', None)
+    if m.student_id:
+        m.name = User.getById(m.student_id)
     score = request.form.get('score', None)
     if score:
         m.score = int(score)
@@ -214,12 +221,17 @@ def addgrade():
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'POST'
     resp.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
+    print 'start add'
     try:
         sess.add(m)
         sess.commit()
+        print '========================='
         resp.data = json.dumps({'code':0, 'msg': u'发布成功'})
     except Exception, ex:
+        print "------------------------"
+        print ex
         resp.data = json.dumps({'code': -1, 'reason': ex})
+    print resp.data
     return resp
 
 

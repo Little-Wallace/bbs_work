@@ -112,13 +112,13 @@ class Grade(Base):
     __tablename__ = 'grade'
 
     id = Column(Integer(), primary_key=True)
-    semester = Column(String(28))
+    semester = Column(String(128))
     contest_time = Column(DateTime(), default=func.now())
     teacher_id = Column(Integer())
     student_id = Column(Integer())
     score = Column(Integer())
-    subject = Column(String(32))
-    name = Column(String(32))
+    subject = Column(String(128))
+    name = Column(String(128))
 
     @classmethod
     def getById(cls, id):

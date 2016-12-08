@@ -43,19 +43,24 @@ def logout():
 
 @bbs_app.route('/login/', methods=['GET', 'POST'])
 def login():
-	form = InputNameAndPassword()
-	if form.validate_on_submit():
-		mail = form.username.data
-		password = form.password.data
-		user = User.check(mail, password)
-		if user:
-			session['logged_in'] = True
-			session['user_id'] = user.id
-			g.user = user
-			return redirect(url_for('index'))
-		else:
-			flash('Invalid username or password', 'danger')
-	return render_template('login.html', form = form)
+    if session.has_key('logged_in') and session['logged_in'] and session['user_id']:
+        print "xxxx"
+        return redirect('/')
+    print session['logged_in']
+    print "....."
+    form = InputNameAndPassword()
+    if form.validate_on_submit():
+        mail = form.username.data
+        password = form.password.data
+        user = User.check(mail, password)
+        if user:
+            session['logged_in'] = True
+            session['user_id'] = user.id
+            g.user = user
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('login.html', form = form)
 
 @bbs_app.route('/', methods=['GET'])
 @login_required
