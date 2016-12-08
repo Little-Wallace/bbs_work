@@ -5,11 +5,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.mysql import TEXT
 from sqlalchemy.sql import func
 from datetime import datetime
+from random import randint
 
 __author__ = 'xixihaha'
 
 Base = declarative_base()
-engine = create_engine('mysql+mysqldb://root:123456@localhost:3306/bbs?charset=utf8')
+engine = create_engine('mysql+mysqldb://root: 7@localhost:3306/bbs?charset=utf8')
 DBsession = sessionmaker(bind=engine)
 session = DBsession()
 NameList = [('Math','default') ,('English','primary'), ('Chemistry','success'), ('Sport','info'), ('Psychology','warning'), ('Computer Science', 'danger')]
@@ -40,7 +41,7 @@ class User(Base):
     id_card = Column(String(32))
     group_id=Column(Integer())
     address = Column(String(32))
-    head = Column(String(128), default='img/a1.jpg')
+    head = Column(String(128), default= 'img/s' + str(randint(1,7)) + '.jpg')
 
     create_time = Column(DateTime(), default=datetime.now())
 

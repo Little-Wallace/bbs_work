@@ -8,10 +8,10 @@ import re
 
 if __name__ == '__main__':
     session.commit()
-    a = User(id=0, name = "ChenSijia", password = "11", email='xixihaha@gmail.com')
-    b = User(id=0, name = "Liuwei", password = "11", email='xixihaha@gmail.com')
-    c = User(id=0, name = "Baihao", password = "11", email='hhhh@gmail.com')
-    d = User(id=0, name = "Wujingsheng", password = "11", email='xxxx@gmail.com')
+    a = User(id=0, name = "ChenSijia", password = "11", email='xixihaha@gmail.com', head = "img/s1.jpg")
+    b = User(id=0, name = "Liuwei", password = "11", email='xixihaha@gmail.com', head = "img/s2.jpg")
+    c = User(id=0, name = "Baihao", password = "11", email='hhhh@gmail.com', head = "img/s3.jpg")
+    d = User(id=0, name = "Wujingsheng", password = "11", email='xxxx@gmail.com', head = "img/s4.jpg")
     l = Message(id=123)
     l.desc = 'XIXI' 
     l.title = 'XIXI'
