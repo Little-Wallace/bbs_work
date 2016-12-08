@@ -40,7 +40,7 @@ class User(Base):
     id_card = Column(String(32))
     group_id=Column(Integer())
     address = Column(String(32))
-    head = Column(String(128), default='img/cup.png')
+    head = Column(String(128), default='img/a1.jpg')
 
     create_time = Column(DateTime(), default=datetime.now())
 
@@ -71,8 +71,8 @@ class ChatInfo(Base):
     __tablename__ = 'chatinfo'
 
     id = Column(Integer(), primary_key = True)
-    sender = Column(String(256))
-    to = Column(String(256))
+    sender = Column(Integer())
+    to = Column(Integer())
     content = Column(String(256))
     create_time = Column(DateTime(timezone=True), default=func.now())
 	
@@ -81,7 +81,8 @@ class ChatInfo(Base):
         return session.query(cls).all()
     @classmethod
     def getBySenderAndTo(cls, sender_id, to_id):
-        return session.query(cls).filter(cls.sender == sender_id and cls.to == to_id).all()
+        print sender_id, ' ',to_id
+        return session.query(cls).filter(cls.sender == sender_id, cls.to == to_id).all()
 
 class Message(Base):
 
@@ -165,7 +166,7 @@ class Topic(Base):
     content = Column(TEXT)
     author = Column(Integer())
     flag = Column(Integer())
-    title = Column(String(36))
+    title = Column(String(128))
     create_time = Column(DateTime(timezone=True), default=func.now())	
     @classmethod
     def getAll(cls):
@@ -197,14 +198,18 @@ class Comment_Topic(Base):
     def getByTopic(cls, topic_id):
 	return session.query(cls).filter(cls.topic_id == topic_id).all()
 
+    @classmethod
+    def countById(cls, topic_id):
+        return session.query(cls).filter(cls.topic_id == topic_id).count()
+
 class Article(Base):
 
     __tablename__ = 'article'
 
     id = Column(Integer(), primary_key=True)
-    title = Column(String(36))
+    title = Column(String(128))
     content = Column(TEXT)
-    author_id = Column(String(28))
+    author_id = Column(Integer())
     intro = Column(TEXT)
     tags = Column(String(256))
     create_time = Column(DateTime(), default=func.now())

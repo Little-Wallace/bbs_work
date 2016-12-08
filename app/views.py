@@ -21,7 +21,12 @@ def login_required(func):
     @wraps(func)
     def _decorator(*args, **kwargs):
         if session.has_key('logged_in') and session['logged_in'] == True:
-            return func(*args, **kwargs)
+            try:
+                return func(*args, **kwargs)
+            except Exception, ex:
+                print ex
+                session['logged_in'] = False
+                return redirect('/login/')
         else:
             return redirect('/login/')
     return _decorator
@@ -30,13 +35,16 @@ def login_required(func):
 def load_user():
     if not session.has_key('user_id'):
         return
-    if session['user_id']:
-        #print session['user_id']
-        user = User.getById(int(session['user_id']))
-        if user:
-           # print type(user)
-           # print user
-            g.user = user
+    try:
+        if session['user_id']:
+            #print session['user_id']
+            user = User.getById(int(session['user_id']))
+            if user:
+               # print type(user)
+               # print user
+                g.user = user
+    except Exception, ex:
+        session['user_id'] = None
 
 def json_response():
     resp = make_response()
@@ -199,7 +207,9 @@ def addgrade():
     m.user_id = request.form.get('user_id', None)
     m.teacher_id = g.user.id
     m.semester = request.form.get('semester', None)
-    m.score = request.form.get('score', None)
+    score = request.form.get('score', None)
+    if score:
+        m.score = int(score)
     resp = make_response()
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'POST'
@@ -216,10 +226,10 @@ def addgrade():
 @bbs_app.route('/homework/list/', methods=['GET'])
 @login_required
 def homework_list():
-    if g.user.priv == 'teacher':
-        q = Task.getByTeacherId(g.user.id)
-    else:
+    if g.user.priv == 'student':
         q = Task.getByUserId(g.user.id)
+    else:
+        q = Task.getByTeacherId(g.user.id)
     status = -1
     if 'status' in request.args:
         q = q.filter(Task.status==request.args.get('status'))
@@ -227,30 +237,27 @@ def homework_list():
     if 'subject' in request.args:
         q = q.filter(Task.subject.like("%" + request.args.get('desc') + "%"))
     tasks = q.order_by(Task.create_time.desc()).all()
-    if tasks and len(tasks) > 0:
-        resp = []
-        for m in tasks:
-            res = {}
-            res['id'] = m.id
-            res['subject'] = m.subject
-            res['teacher'] = u'无'
-            res['create_time'] = str(m.create_time)
-            res['content'] = m.desc
-            if m.status == 1:
-                res['status'] = u'已完成'
-            else:
-                res['status'] = u'未完成'
-            u = User.getById(m.teacher_id)
-            if u:
-                res['teacher'] = u.name
-            u = User.getById(m.student_id)
-            if u:
-                res['name'] = u.name
-            resp.append(res)
-        return render_template('task.html', user=g.user, tasks=resp, status=status,
-                cur_page='homework');
-    else:
-        return render_template('task.html', user=g.user)
+    resp = []
+    for m in tasks:
+        res = {}
+        res['id'] = m.id
+        res['subject'] = m.subject
+        res['teacher'] = u'无'
+        res['create_time'] = str(m.create_time)
+        res['content'] = m.desc
+        if m.status == 1:
+            res['status'] = u'已完成'
+        else:
+            res['status'] = u'未完成'
+        u = User.getById(m.teacher_id)
+        if u:
+            res['teacher'] = u.name
+        u = User.getById(m.student_id)
+        if u:
+            res['name'] = u.name
+        resp.append(res)
+    return render_template('task.html', user=g.user, tasks=resp, status=status,
+            cur_page='homework');
 
 @bbs_app.route('/homework/add/', methods=['POST'])
 @login_required

@@ -30,7 +30,7 @@
 					{%  if i.sender != other_id %}
 					<span style="color:#6495ED;"><strong>You</strong></span>
 					{% else %}
-					<span style="color:#FF7F50;"><strong>{{ other_id }}</strong></span>
+					<span style="color:#FF7F50;"><strong>{{ other_name }}</strong></span>
 					{% endif %}
 					<span style="color:#808080">({{ i.create_time }}):</span> <br/>
 					<p style="text-indent:1em;">{{ i.content }}</p>
@@ -56,14 +56,15 @@
 <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
 <script type="text/javascript">
-$(document).ready(function(){
-	$('#chat_id').scrollTop( $('#chat_id')[0].scrollHeight );
-});
 function myfresh() {
 	$.get(location.href+'/get/',function(result){
 		$("#chat_id").html(result);
 	});
+	$('#chat_id').scrollTop( $('#chat_id')[0].scrollHeight );
 }
-setTimeout('myfresh()', 5000);
+$(document).ready(function(){
+	$('#chat_id').scrollTop( $('#chat_id')[0].scrollHeight );
+	setInterval("myfresh()", 1000);
+});
 </script>
 </html>

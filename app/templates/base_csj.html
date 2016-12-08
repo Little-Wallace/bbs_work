@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>家校沟通系统</title>
-
 	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='css/plugins/summernote/summernote.css') }}" rel="stylesheet">
@@ -28,8 +27,10 @@
     <link href="{{ url_for('static', filename='css/plugins/ionRangeSlider/ion.rangeSlider.skinFlat.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/plugins/clockpicker/clockpicker.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/plugins/daterangepicker/daterangepicker-bs3.css') }}" rel="stylesheet">
-
+	<link href="{{ url_for('static', filename='css/plugins/codemirror/codemirror.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/plugins/codemirror/ambiance.css') }}" rel="stylesheet">   <link href="{{ url_for('static', filename='css/plugins/daterangepicker/daterangepicker-bs3.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet" media="screen">
+	<link href="{{ url_for('static', filename='css/bootstrap-datetimepicker.css') }}" rel="stylesheet" media="screen">
     <!-- Mainly scripts -->
 	<script src="{{ url_for('static', filename='js/jquery-2.1.1.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
@@ -42,7 +43,7 @@
 
 </head>
 
-<body class="pace-done">
+<body {% if cur_page == 'homework'%}class="fixed-sidebar no-skin-config full-height-layout"{% endif %} >
 
     <div id="wrapper">
 
@@ -55,48 +56,54 @@
 							<img alt="image" class="img-circle" width='48' height='48' src="{{ url_for('static', filename=user.head) }}"></span>
                         <a data-toggle="dropdown" class="dropdown-toggle">
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"> {{ user.name }}</strong>
-								</span> <span class="text-muted text-xs block" id="login_user_id">教师id: {{ user.id }}</span> </span> </a>
+								</span> <span class="text-muted text-xs block"
+									id="login_user_id">Teacher id: {{ user.id }}</span> </span> </a>
                     </div>
                     <div class="logo-element">
                         IN+
                     </div>
                 </li>
                 <li>
-                    <a href="/"><i class="fa fa-th-large"></i> <span class="nav-label">Homes</span></a>
+                    <a href="/"><i class="fa fa-th-large"></i> <span class="nav-label">Home</span></a>
                 </li>
 				<li {% if cur_page == 'homework'%} class="active"{% endif %}>
-                    <a href="/homework/list/"><i class="fa fa-edit"></i> <span class="nav-label">作业监督</span></a>
+                    <a href="/homework/list/"><i class="fa fa-edit"></i> <span
+							class="nav-label">Homework</span></a>
 				</li>
 				<li	{% if cur_page == 'grade' %} class="active"{% endif %}>
-					<a href="/grade/"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">成绩追踪</span></a>
+					<a href="/grade/"><i class="fa fa-bar-chart-o"></i> <span
+							class="nav-label">Academic Performance</span></a>
                 </li>
 				<li {% if cur_page == 'article' %} class="active" {% endif %}>
-                    <a href="#"><i class="fa fa-diamond"></i> <span class="nav-label">文章推送</span>
+                    <a href="#"><i class="fa fa-diamond"></i> <span class="nav-label">Article</span>
 						<span class="fa arrow"></span>
 					</a>
 					<ul class="nav nav-second-level collapse" style="height: 0px">
 						<li>
-							<a href="/article/list/">文章列表</a>
+							<a href="/article/list/">List</a>
 						</li>
 						{% if user.priv == 'teacher' or user.priv == 'admin'%}
 						<li {% if push %} class="active"{% endif %}>
-							<a href="/article/push/">发表新文章</a>
+							<a href="/article/push/">New</a>
 						</li>
 						{% endif %}
 					</ul>
                 </li>
 				<li{% if cur_page == 'message' %} class="active" {% endif %}>
-                    <a href="/message/list/"><i class="fa fa-flask"></i> <span class="nav-label">通知发布</span></a>
+                    <a href="/message/list/"><i class="fa fa-flask"></i> <span
+							class="nav-label">Notification</span></a>
                 </li>
 				<li{% if cur_page =='chat' %} class="active" {% endif %}>
-                    <a href="/chattinglist/"><i class="fa fa-desktop"></i> <span class="nav-label">在线交流</span></a>
+                    <a href="/chattinglist/"><i class="fa fa-desktop"></i> <span
+							class="nav-label">Communication</span></a>
                 </li>
 				<li{% if cur_page == 'bbs' %} class="active" {% endif %}>
-                    <a href="/bbslist/0"><i class="fa fa-globe"></i> <span class="nav-label">家长社区</span></a>
+                    <a href="/bbslist/0"><i class="fa fa-globe"></i> <span class="nav-label">BBS</span></a>
                 </li>
 				{% if user.priv == 'admin' %}
 				<li {% if cur_page == 'admin'%} class="active" {% endif %}>
-                    <a href="/user/list/"><i class="fa fa-star"></i> <span class="nav-label">用户权限管理</span></a>
+                    <a href="/user/list/"><i class="fa fa-star"></i> <span
+							class="nav-label">Authority Regulation</span></a>
                 </li>
 				{% endif %}
 				

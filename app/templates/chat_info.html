@@ -4,7 +4,7 @@
 		{%  if i.sender != other_id %}
 		<span style="color:#6495ED;"><strong>You</strong></span>
 		{% else %}
-		<span style="color:#FF7F50;"><strong>{{ other_id }}</strong></span>
+		<span style="color:#FF7F50;"><strong>{{ other_name }}</strong></span>
 		{% endif %}
 		<span style="color:#808080">({{ i.create_time }}):</span> <br/>
 		<p style="text-indent:1em;">{{ i.content }}</p>

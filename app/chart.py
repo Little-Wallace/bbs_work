@@ -60,7 +60,7 @@ def login():
 @bbs_app.route('/', methods=['GET'])
 @login_required
 def index():
-	return render_template('base_csj.html', user = g.user)
+    return render_template('base_csj.html', user = g.user)
 
 @bbs_app.route('/chattinglist/', methods=['GET'])
 @login_required
@@ -74,15 +74,21 @@ def chat(other_id):
 	a = ChatInfo.getBySenderAndTo(g.user.id, other_id)
 	b = ChatInfo.getBySenderAndTo(other_id, g.user.id)
 	mergelist = sorted(a+b, key = lambda ChatInfo:ChatInfo.create_time)
+        for x in mergelist:
+            print x.content
 	form = InputInfo()
-	if form.validate_on_submit():
+    	nname = User.getById(other_id).name
+        if form.validate_on_submit():
 		msg = form.content.data
+                print msg
 		form.content.data = ''
-		cc = ChatInfo(id=0, sender = g.user.id, to = other_id, content = msg)
+		cc = ChatInfo(id=0, sender=g.user.id, to=other_id, content=msg)
 		sess.add(cc)
 		sess.commit()
-		return redirect('/communication/' + other_id)
-	return render_template('chat_room.html', information = mergelist, form = form, other_id = other_id)
+                print 'add succ'
+		return redirect('/communication/' + str(other_id))
+	return render_template('chat_room.html', information = mergelist, form = form, other_id =
+                other_id, other_name = nname)
 
 @bbs_app.route('/communication/<int:other_id>/get/', methods=['GET'])
 @login_required
@@ -90,7 +96,11 @@ def get_chat_info(other_id):
     a = ChatInfo.getBySenderAndTo(g.user.id, other_id)
     b = ChatInfo.getBySenderAndTo(other_id, g.user.id)
     mergelist = sorted(a+b, key = lambda ChatInfo:ChatInfo.create_time)
-    return render_template('chat_info.html', information = mergelist, other_id = other_id)
+    nname = User.getById(other_id).name
+    for x in mergelist:
+        print 'xxx=', x.content
+    	nname = User.getById(other_id).name
+    return render_template('chat_info.html', information = mergelist, other_id = other_id, other_name=nname)
 
 @bbs_app.errorhandler(404)
 def page_not_found(e):
@@ -108,7 +118,7 @@ def bbs_list(id):
 	else:
 		topic = Topic.getByFlag(id-1)
 	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList =
-                NameList, User = User, cur_page='bbs')
+                NameList, User = User, cur_page='bbs', comment_topic = Comment_Topic)
 
 @bbs_app.route('/addtopic/<int:t_id>', methods=['GET', 'POST'])
 @login_required
@@ -163,7 +173,7 @@ def topic(id):
 		form.content.data = ""
 		sess.add(Comment_Topic(id = 0, content = msg, author = g.user.id, topic_id = id))
 		sess.commit()
-		return redirect('/topic/' + id)
+		return redirect('/topic/' + str(id))
         resp = []
         for c in comment:
             res = {}

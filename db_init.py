@@ -1,5 +1,5 @@
 #encoding: utf-8
-from app.models import User, session, Message, Grade, Article, ArticleToUser, Comment
+from app.models import User, session, Message, Grade, Article, ArticleToUser, Comment, ChatInfo, Topic, Comment_Topic
 from flask import url_for
 from app import bbs_app
 from datetime import datetime
@@ -53,6 +53,11 @@ if __name__ == '__main__':
         t.article_id = a.id
         t.user_id = 1
         session.add(t)
+    u = session.query(User).first()
+    print u.priv
+    u.priv = 'admin'
+    session.commit()
+
     ''' 
     print content
     for i in range(0, 10): 
@@ -65,6 +70,6 @@ if __name__ == '__main__':
         g.name = User.getById(3).name
         nu *= -1
         session.add(g)
-    '''
 
+    '''
 

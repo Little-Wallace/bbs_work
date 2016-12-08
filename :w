@@ -7,14 +7,13 @@ import json
 import re
 
 if __name__ == '__main__':
-    u = session.query(User).first()
-    print u.priv
-    u.priv = 'admin'
-    session.commit()
+    u = session.query(User).offset(1).all()
+    for r in u:
+        print r.name
+        r.head = 'img/a1.jpg'
 
     for i in range(0, 10):
         t = Task()
-        t.name = 'haha'
         t.teacher_id = 1
         t.student_id = i + 1
         t.status = 0

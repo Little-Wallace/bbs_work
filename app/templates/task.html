@@ -3,6 +3,7 @@
 作业监督
 {% endblock %}
 {% block page_content %}
+	
 <script>
 	function search() {
 		if ($("#option1").hasClass("active")){
@@ -44,37 +45,32 @@
 </script>
 <div class="fh-breadcrumb">
 	<div class="fh-column">
-		
-		<div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
-			<div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
-				<ul class="list-group elements-list">
-					{% for t in tasks %}
-					<li class="list-group-item">
-						<a data-toggle="tab" href="#tab-{{ t.id }}">
-							<small class="pull-right text-muted">{{ t.create_time }}</small>
-							<strong>{{ t.name }}</strong>
-							<div class="small m-t-xs">
-								<p class="m-b-xs">
-									{{ t.content }}
-									<br>
-								</p>
-								<p class="m-b-none">
-								<span class="label pull-right label-primary">{{ t.subject }}</span>
-									<i class="fa fa-map-marker"></i>from {{ t.teacher }}
-								</p>
-							</div>
-						</a>
-					</li>	
-					{% endfor %}
-				<ul>
-			</div>
-			<div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 7px; position: absolute; top: 210px; opacity: 0.4; display: none; border-radius: 7px; z-index: 99; right: 1px; height: 567.809px;"></div>
-			<div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div>
+		<div class="full-height-scroll">
+			<ul class="list-group elements-list">
+				{% for t in tasks %}
+				<li class="list-group-item">
+					<a data-toggle="tab" href="#tab-{{ t.id }}">
+						<small class="pull-right text-muted">{{ t.create_time }}</small>
+						<strong>{{ t.name }}</strong>
+						<div class="small m-t-xs">
+							<p>
+								{{ t.content }}
+								<br>
+							</p>
+							<p class="m-b-none">
+							<span class="label pull-right label-primary">{{ t.subject }}</span>
+								<i class="fa fa-map-marker"></i>from {{ t.teacher }}
+							</p>
+						</div>
+					</a>
+				</li>	
+				{% endfor %}
+			</ul>
 		</div>
 	</div>
-	{% if user.priv == 'teacher' %}
+	{% if user.priv == 'teacher' or user.priv == 'admin' %}
 	<div class="full-height">
-		<div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;"><div class="full-height-scroll white-bg border-left" style="overflow: hidden; width: auto; height: 100%;">
+		<div class="full-height-scroll white-bg border-left">
 			<div class="element-detail-box">
 				<div class="row">
 					<div class="col-sm-4 m-b-xs">
