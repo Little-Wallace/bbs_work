@@ -46,7 +46,6 @@ def login():
     if session.has_key('logged_in') and session['logged_in'] and session['user_id']:
         print "xxxx"
         return redirect('/')
-    print session['logged_in']
     print "....."
     form = InputNameAndPassword()
     if form.validate_on_submit():
@@ -121,7 +120,7 @@ def bbs_list(id):
 	if id == 0:
 		topic = Topic.getAll()
 	else:
-		topic = Topic.getByFlag(id-1)
+		topic = Topic.getByFlag(id)
 	return render_template('bulletin_board_list.html', user = g.user, topic = topic, NameList =
                 NameList, User = User, cur_page='bbs', comment_topic = Comment_Topic)
 
