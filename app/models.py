@@ -26,21 +26,15 @@ class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer(), primary_key=True)
-    name = Column(String(20))
+    name = Column(String(50))
     password = Column(String(32))
-    phone = Column(String(20))
+    phone = Column(String(64), default = '13' + str(randint(100, 999)) + str(randint(1000, 9999)) +
+            str(randint(10, 99)))
     priv = Column(String(16), default=STUDENT)
-    sex = Column(String(20))
-    major = Column(String(30))
-    university = Column(String(32))
-    status = Column(String(20))
-    school = Column(String(20))
-    qq = Column(String(20))
+    school = Column(String(128), default = "Beijing University of Posts and Telecommunications")
     email = Column(String(64))
-    extra = Column(String(256))
-    id_card = Column(String(32))
-    group_id=Column(Integer())
-    address = Column(String(32))
+    group_id=Column(Integer(), default = str(randint(1,3)))
+    address = Column(String(128), default ="No.10 Xitucheng Road, Haidian District")
     head = Column(String(128), default= 'img/s' + str(randint(1,7)) + '.jpg')
 
     create_time = Column(DateTime(), default=datetime.now())

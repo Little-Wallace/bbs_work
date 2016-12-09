@@ -79,7 +79,8 @@ Message List
 							<thead>
 							<tr>
 								<th>消息 </th>
-								<th>来源</th>
+								<th>From</th>
+								<th>To</th>
 								<th>发布时间</th>
 								<th>状态</th>
 							</tr>
@@ -89,6 +90,7 @@ Message List
 									<tr>
 										<td>{{ m.title }}</td>
 										<td>{{ m.author }}</td>
+										<td>{{ m.receiver }}</td>
 										<td>{{ m.create_time }}</td>
 										<td><a href="/message/{{ m.id }}/">{{ m.status }}</a></td>
 									</tr>

@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>INSPINIA | Login</title>
+    <title>MoMo | Login</title>
 
 	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}" rel="stylesheet">
@@ -39,7 +39,7 @@
 				{% import "bootstrap/wtf.html" as wtf %}
 				<form class="form" method="POST">
 					{{ form.hidden_tag() }}
-					{{ wtf.form_field(form.username, class="form-control", placeholder="Username") }}
+					{{ wtf.form_field(form.username, class="form-control", placeholder="Email") }}
 					{{ form.hidden_tag() }}
 					{{ wtf.form_field(form.password, class="form-control", placeholder="Password") }}
 					{{ wtf.form_field(form.submit, class="btn btn-primary block full-width m-b") }}

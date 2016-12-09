@@ -87,8 +87,11 @@ def message_list():
         else:
             res['status'] = u'未读'
         u = User.getById(m.author_id)
+        n = User.getById(m.user_id)
         if u:
             res['author'] = u.name
+        if n:
+            res['receiver'] = n.name
         resp.append(res)
     return render_template('message_list.html', user=g.user, messages=resp, status=status,
             cur_page='message');
@@ -98,9 +101,9 @@ def message_list():
 def message_info(m_id):
     m = Message.getById(m_id)
     if not m:
-        return render_template('error.html', user=g.user, error='haha')
+        return render_template('error.html', user=g.user, error='Wow, you get an error !!!')
     if m.user_id != g.user.id and m.group_id != g.user.group_id and m.author_id != g.user.id:
-        return render_template('error.html', user=g.user, error='xixi')
+        return render_template('error.html', user=g.user, error='Ha?, you get an error !!!')
     m.status = 1
     sess.commit()
     return render_template('message.html', user=g.user, m=m)
@@ -108,12 +111,16 @@ def message_info(m_id):
 @bbs_app.route('/message/add/', methods=['POST'])
 @login_required
 def addmessage():
-    if g.user.priv != User.TEACHER:
+    if g.user.priv == User.STUDENT:
         return render_template('error.html', user=g.user, error=u'haha')
     m = Message()
     m.title = request.form.get('title', None)
     m.desc = request.form.get('content', None)
-    m.user_id = request.form.get('user_id', None)
+    try:
+        user_id = int(request.form.get('user_id', 0))
+    except Exception, ex:
+        user_id = 0
+    m.user_id = user_id 
     group_id = request.form.get('group_id', None)
     m.author_id = g.user.id
     m.status = 0
@@ -121,7 +128,9 @@ def addmessage():
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'POST'
     resp.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
+    print "hahahah",group_id
     group = User.getByGroupId(group_id)
+    print "~~~~", len(group)
     try:
         for u in group:
             mm = Message()
@@ -131,11 +140,13 @@ def addmessage():
             mm.status = 0
             mm.author_id = g.user.id
             sess.add(mm)
-        sess.add(m)
+        if m.user_id != 0:
+            sess.add(m)
         sess.commit()
         resp.data = json.dumps({'code':0, 'msg': u'发布成功'})
     except Exception, ex:
         resp.data = json.dumps({'code': -1, 'reason': ex})
+        print ex
     return resp
 
 
@@ -274,7 +285,9 @@ def homework_list():
 @bbs_app.route('/homework/add/', methods=['POST'])
 @login_required
 def addhomework():
-    if g.user.priv != User.TEACHER:
+    print "This is add task page!!"
+    if g.user.priv == User.STUDENT:
+        print "hahaha error"
         return render_template('error.html', user=g.user, error=u'haha')
     subject = request.form.get('subject', None)
     desc = request.form.get('content', None)
@@ -282,7 +295,7 @@ def addhomework():
     resp = json_response()
     print group_id
     us = User.getByGroupId(group_id)
-    print len(us)
+    print "Hahahahaha --- ",len(us)
     try:
         for u in us:
             mm = Task()
@@ -298,10 +311,10 @@ def addhomework():
         resp.data = json.dumps({'code': -1, 'reason': ex})
     return resp
 
-@bbs_app.route('/homework/do/<t_id>/', methods=['GET'])
+@bbs_app.route('/homework/do/<int:t_id>/', methods=['GET'])
 @login_required
 def dohomework(t_id):
-    if g.user.priv != User.TEACHER:
+    if g.user.priv == User.STUDENT:
         return render_template('error.html', user=g.user, error=u'haha')
     t = Task.getById(t_id)
     resp = json_response()
@@ -311,6 +324,7 @@ def dohomework(t_id):
         resp.data = json.dumps({'code':0, 'msg': u'成功'})
     except Exception, ex:
         resp.data = json.dumps({'code': -1, 'reason': ex})
+        print ex
     return resp
 
 
